@@ -260,8 +260,8 @@ python -c "import torch; import numpy; import pandas; import sklearn; import opt
 
 ```bash
 python -c "
-from models import createLightDeepConvLSTM
-model = createLightDeepConvLSTM('ucihar', dropout=0.15)
+from models import createMicroBiConvLstm
+model = createMicroBiConvLstm('ucihar', dropout=0.15)
 info = model.getModelInfo()
 print(f'Model: {info[\"modelName\"]}')
 print(f'Parameters: {info[\"totalParameters\"]:,}')
@@ -272,7 +272,7 @@ print('Model creation successful.')
 Expected output:
 
 ```
-Model: LightDeepConvLSTM
+Model: MicroBiConvLSTM
 Parameters: 10,454
 Model creation successful.
 ```
@@ -320,7 +320,7 @@ If Python cannot find `models`, `baselines`, or `data` modules, ensure you are r
 
 ```bash
 cd /path/to/Micro-Bi-ConvLSTM
-python scripts/trainLightDeepConvLSTM.py --dataset ucihar
+python scripts/trainMicroBiConvLstm.py --dataset ucihar
 ```
 
 Alternatively, add the repository root to the Python path.

@@ -1,23 +1,11 @@
-"""Memory Footprint Benchmark for LightDeepConvLSTM and Baselines.
+"""Memory Footprint Benchmark for MicroBiConvLSTM and Baselines.
 
-Measures model size for inference in both normal (FP32) and quantized (INT8) modes.
-Compares LightDeepConvLSTM against baseline architectures:
-- DeepConvLSTM (original ~132K params)
-- TinyHAR (~42K params)
-- TinierHAR (~17K params)
-
-Metrics reported:
-1. Parameter count
-2. Model file size (FP32, .pt format)
-3. Model file size (INT8, dynamic quantization)
-4. Memory reduction ratio (FP32 → INT8)
-5. State dict memory footprint
-6. Inference memory footprint (peak GPU/CPU allocation)
+Measures model size in FP32 and INT8 modes. Compares MicroBiConvLSTM against
+baseline architectures (DeepConvLSTM, TinyHAR, TinierHAR).
 
 Usage:
-    python LightDeepConvLSTM/scripts/benchmarkMemoryFootprint.py --dataset ucihar
-    python LightDeepConvLSTM/scripts/benchmarkMemoryFootprint.py --all-datasets
-    python LightDeepConvLSTM/scripts/benchmarkMemoryFootprint.py --dataset ucihar --output-format markdown
+    python scripts/benchmarkMemoryFootprint.py --dataset ucihar
+    python scripts/benchmarkMemoryFootprint.py --all-datasets
 """
 
 from __future__ import annotations
@@ -40,14 +28,15 @@ import torch.nn as nn
 
 # Ensure local imports work
 _THIS_FILE = Path(__file__).resolve()
-_LIGHTDEEPCONVLSTM_DIR = _THIS_FILE.parents[1]
+_REPO_DIR = _THIS_FILE.parents[1]
 _REPO_ROOT = _THIS_FILE.parents[2]
 
-sys.path.insert(0, str(_LIGHTDEEPCONVLSTM_DIR))
+sys.path.insert(0, str(_REPO_DIR))
 sys.path.insert(0, str(_REPO_ROOT))
 
-from models.light_deep_conv_lstm import LightDeepConvLSTM, createLightDeepConvLSTM
-from baselines.deepConvLstm import DeepConvLSTM, TinierHAR
+from models.microBiConvLstm import MicroBiConvLSTM, createMicroBiConvLstm
+from baselines.deepConvLstm import DeepConvLSTM
+from baselines.tinierHar import TinierHAR
 from baselines.tinyHar import TinyHAR
 
 # Dataset configurations
@@ -298,18 +287,18 @@ def create_all_models(dataset: str, config: Dict[str, Any]) -> Dict[str, nn.Modu
     """Create all models for benchmarking."""
     models = {}
     
-    # LightDeepConvLSTM (our model)
+    # MicroBiConvLSTM (our model)
     try:
-        models['LightDeepConvLSTM'] = LightDeepConvLSTM(
+        models['MicroBiConvLSTM'] = MicroBiConvLSTM(
             numClasses=config['numClasses'],
             inChannels=config['inChannels'],
             seqLen=config['seqLen'],
             dropout=0.1,
         )
     except Exception as e:
-        print(f"  Warning: Failed to create LightDeepConvLSTM: {e}")
+        print(f"  Warning: Failed to create MicroBiConvLSTM: {e}")
     
-    # DeepConvLSTM (baseline, ~132K params)
+    # DeepConvLSTM (baseline)
     try:
         models['DeepConvLSTM'] = DeepConvLSTM(
             numClasses=config['numClasses'],
@@ -323,7 +312,7 @@ def create_all_models(dataset: str, config: Dict[str, Any]) -> Dict[str, nn.Modu
     except Exception as e:
         print(f"  Warning: Failed to create DeepConvLSTM: {e}")
     
-    # TinyHAR (baseline, ~42K params)
+    # TinyHAR (baseline)
     try:
         models['TinyHAR'] = TinyHAR(
             numClasses=config['numClasses'],
@@ -334,7 +323,7 @@ def create_all_models(dataset: str, config: Dict[str, Any]) -> Dict[str, nn.Modu
     except Exception as e:
         print(f"  Warning: Failed to create TinyHAR: {e}")
     
-    # TinierHAR (baseline, ~17K params)
+    # TinierHAR (baseline)
     try:
         models['TinierHAR'] = TinierHAR(
             numClasses=config['numClasses'],
@@ -372,7 +361,7 @@ def generate_markdown_table(results: List[MemoryBenchmark], dataset: str) -> str
     ]
     
     for r in sorted_results:
-        highlight = "**" if r.model_name == "LightDeepConvLSTM" else ""
+        highlight = "**" if r.model_name == "MicroBiConvLSTM" else ""
         lines.append(
             f"| {highlight}{r.model_name}{highlight} | "
             f"{r.num_params:,} | "
@@ -392,7 +381,7 @@ def generate_markdown_table(results: List[MemoryBenchmark], dataset: str) -> str
     ])
     
     for r in sorted_results:
-        highlight = "**" if r.model_name == "LightDeepConvLSTM" else ""
+        highlight = "**" if r.model_name == "MicroBiConvLSTM" else ""
         lines.append(
             f"| {highlight}{r.model_name}{highlight} | "
             f"{format_bytes(r.fp32_state_dict_size)} | "
@@ -441,7 +430,7 @@ def generate_comparison_summary(all_results: Dict[str, List[MemoryBenchmark]]) -
     model_avgs.sort(key=lambda x: x['avg_fp32'])
     
     for avg in model_avgs:
-        highlight = "**" if avg['model_name'] == "LightDeepConvLSTM" else ""
+        highlight = "**" if avg['model_name'] == "MicroBiConvLSTM" else ""
         lines.append(
             f"| {highlight}{avg['model_name']}{highlight} | "
             f"{int(avg['avg_params']):,} | "
@@ -452,19 +441,19 @@ def generate_comparison_summary(all_results: Dict[str, List[MemoryBenchmark]]) -
         )
     
     # Add efficiency comparison
-    if 'LightDeepConvLSTM' in model_stats:
-        light_avg = next(a for a in model_avgs if a['model_name'] == 'LightDeepConvLSTM')
+    if 'MicroBiConvLSTM' in model_stats:
+        light_avg = next(a for a in model_avgs if a['model_name'] == 'MicroBiConvLSTM')
         
         lines.extend([
             "",
-            "### LightDeepConvLSTM vs Baselines (Memory Efficiency)",
+            "### MicroBiConvLSTM vs Baselines (Memory Efficiency)",
             "",
             "| Baseline | FP32 Size Ratio | INT8 Size Ratio | Memory Savings |",
             "|:---------|----------------:|----------------:|---------------:|",
         ])
         
         for avg in model_avgs:
-            if avg['model_name'] != 'LightDeepConvLSTM':
+            if avg['model_name'] != 'MicroBiConvLSTM':
                 fp32_ratio = avg['avg_fp32'] / light_avg['avg_fp32']
                 int8_ratio = avg['avg_int8'] / light_avg['avg_int8']
                 savings = (1 - light_avg['avg_fp32'] / avg['avg_fp32']) * 100
@@ -521,7 +510,7 @@ def run_benchmark(args) -> None:
         print(generate_comparison_summary(all_results))
     
     # Save results
-    output_dir = _LIGHTDEEPCONVLSTM_DIR / "results" / "ablations" / "memory_footprint"
+    output_dir = _REPO_DIR / "results" / "ablations" / "memory_footprint"
     output_dir.mkdir(parents=True, exist_ok=True)
     
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -565,9 +554,9 @@ def run_benchmark(args) -> None:
     md_lines.extend([
         "## Key Insights",
         "",
-        "### Memory Efficiency Advantages of LightDeepConvLSTM",
+        "### Memory Efficiency Advantages of MicroBiConvLSTM",
         "",
-        "1. **Smallest Model Size**: LightDeepConvLSTM has the smallest FP32 model size among all architectures.",
+        "1. **Smallest Model Size**: MicroBiConvLSTM has the smallest FP32 model size among all architectures.",
         "",
         "2. **Efficient Quantization**: INT8 quantization provides ~2-4× compression with minimal accuracy loss.",
         "",
@@ -603,7 +592,7 @@ def run_benchmark(args) -> None:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Memory Footprint Benchmark for LightDeepConvLSTM and Baselines"
+        description="Memory Footprint Benchmark for MicroBiConvLSTM and Baselines"
     )
     parser.add_argument(
         '--dataset', type=str, default='ucihar',

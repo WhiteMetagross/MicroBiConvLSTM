@@ -1,5 +1,5 @@
 """
-WISDM Dataset Loader (wrapper for LightDeepConvLSTM self-contained project)
+WISDM Dataset Loader (wrapper for MicroBiConvLSTM self-contained project)
 """
 import sys
 from pathlib import Path

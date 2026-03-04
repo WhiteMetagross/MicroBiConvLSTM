@@ -1,38 +1,15 @@
-"""Ablation studies runner for LightDeepConvLSTM.
+"""Ablation studies runner for MicroBiConvLSTM.
 
-Implements the ablation plan:
-1) Architectural ablations A0-A4
-2) Efficiency proxies: Pareto (params vs F1), complexity scaling vs window length, INT8 PTQ simulation
-3) Interpretability: 1D Grad-CAM (conv2)
-4) Robustness: channel dropout, sampling jitter, preprocessing bypass
-5) Publication tables in Markdown
+Implements architectural ablations (A0-A4), efficiency proxies (Pareto, complexity,
+INT8 PTQ), interpretability (1D Grad-CAM), and robustness evaluations.
 
-Design goals
-------------
-- Keep the frozen reference model untouched.
-- Reuse the existing training protocol (optimizer AdamW, cosine LR, early stopping, AMP)
-  but enforce *fixed* learning rate 1e-3 as requested.
-- Produce reproducible outputs: JSON artifacts + Markdown tables + plots.
-
-Usage examples
---------------
-# Architectural ablations on UCI-HAR (retrain where required)
-python LightDeepConvLSTM/scripts/ablationStudiesLightDeepConvLSTM.py --dataset ucihar --study arch --seeds 3
-
-# Pareto grid (convFilters x lstmHidden)
-python LightDeepConvLSTM/scripts/ablationStudiesLightDeepConvLSTM.py --dataset ucihar --study pareto --seeds 1
-
-# Complexity scaling vs window length
-python LightDeepConvLSTM/scripts/ablationStudiesLightDeepConvLSTM.py --dataset ucihar --study complexity
-
-# INT8 PTQ simulation (dynamic quantization)
-python LightDeepConvLSTM/scripts/ablationStudiesLightDeepConvLSTM.py --dataset ucihar --study quant
-
-# Grad-CAM for a chosen class
-python LightDeepConvLSTM/scripts/ablationStudiesLightDeepConvLSTM.py --dataset ucihar --study gradcam --gradcam-class "Walking"
-
-# Robustness evaluations
-python LightDeepConvLSTM/scripts/ablationStudiesLightDeepConvLSTM.py --dataset pamap2 --study sensitivity
+Usage:
+    python scripts/ablationStudiesMicroBiConvLstm.py --dataset ucihar --study arch --seeds 3
+    python scripts/ablationStudiesMicroBiConvLstm.py --dataset ucihar --study pareto --seeds 1
+    python scripts/ablationStudiesMicroBiConvLstm.py --dataset ucihar --study complexity
+    python scripts/ablationStudiesMicroBiConvLstm.py --dataset ucihar --study quant
+    python scripts/ablationStudiesMicroBiConvLstm.py --dataset ucihar --study gradcam --gradcam-class "Walking"
+    python scripts/ablationStudiesMicroBiConvLstm.py --dataset pamap2 --study sensitivity
 """
 
 from __future__ import annotations
@@ -56,19 +33,18 @@ from sklearn.metrics import f1_score, accuracy_score
 
 # Ensure local imports work whether run from repo root or module folder
 _THIS_FILE = Path(__file__).resolve()
-_LIGHTDEEPCONVLSTM_DIR = _THIS_FILE.parents[1]
+_REPO_DIR = _THIS_FILE.parents[1]
 _REPO_ROOT = _THIS_FILE.parents[2]
 
 import sys
 
-sys.path.insert(0, str(_LIGHTDEEPCONVLSTM_DIR))
+sys.path.insert(0, str(_REPO_DIR))
 sys.path.insert(0, str(_REPO_ROOT))
 
-from models.light_deep_conv_lstm import LightDeepConvLSTM
-from models.light_deep_conv_lstm_variants import create_variant_model, make_variant_spec
+from models.microBiConvLstm import MicroBiConvLSTM
+from models.microBiConvLstmVariants import createVariantModel, makeVariantSpec
 
-# Reuse training utilities (seed setting, AMP logic, etc.) from the baseline script.
-from scripts.trainLightDeepConvLSTM import (
+from scripts.trainMicroBiConvLstm import (
     DATASET_CONFIGS,
     MASTER_SEED,
     generateRandomSeeds,
@@ -116,7 +92,7 @@ def _find_latest_checkpoint(dataset: str, *, variant_prefix: str = "A0") -> Path
 # --------------------------
 
 def out_dir() -> Path:
-    p = _LIGHTDEEPCONVLSTM_DIR / "results" / "ablations"
+    p = _REPO_DIR / "results" / "ablations"
     p.mkdir(parents=True, exist_ok=True)
     return p
 
@@ -145,17 +121,7 @@ def load_dataset(
     *,
     bypass_preprocessing: bool = False,
 ) -> Tuple[torch.utils.data.DataLoader, torch.utils.data.DataLoader, Optional[torch.Tensor]]:
-    """Load train/test loaders with optional preprocessing bypass.
-
-    For PAMAP2 / SKODA / Daphnet, preprocessing "Signal Rescue" filtering can be bypassed.
-    
-    Note: Uses local data loaders from LightDeepConvLSTM/data folder.
-    Skoda uses OLD stratified shuffle split for paper reproducibility.
-    """
-    import sys
-    from pathlib import Path
-    
-    # Add local data folder to path (self-contained for LightDeepConvLSTM paper)
+    """Load train/test loaders with optional preprocessing bypass."""
     dataPath = Path(__file__).parent.parent / 'data'
     if str(dataPath) not in sys.path:
         sys.path.insert(0, str(dataPath))
@@ -246,7 +212,6 @@ def load_dataset(
         return train_loader, test_loader, class_weights
 
     if ds == "skoda":
-        # Use local Skoda with OLD stratified shuffle split for paper reproducibility
         from skoda import SkodaDataset, computeSkodaClassWeights, NUM_CLASSES
         from torch.utils.data import DataLoader
 
@@ -407,7 +372,7 @@ def train_variant(
         dataset, config["batchSize"], bypass_preprocessing=bypass_preprocessing
     )
 
-    spec = make_variant_spec(
+    spec = makeVariantSpec(
         variantId=variant_id,
         numClasses=config["numClasses"],
         inChannels=config["inputChannels"],
@@ -417,7 +382,7 @@ def train_variant(
         lstmHidden=lstm_hidden,
     )
 
-    model = create_variant_model(spec).to(device)
+    model = createVariantModel(spec).to(device)
 
     if class_weights is not None:
         class_weights = class_weights.to(device)
@@ -580,14 +545,14 @@ def study_arch(args) -> None:
         else:
             criterion = nn.CrossEntropyLoss()
 
-        spec_a4 = make_variant_spec(
+        spec_a4 = makeVariantSpec(
             variantId="A4",
             numClasses=ds_cfg["numClasses"],
             inChannels=ds_cfg["inputChannels"],
             seqLen=ds_cfg["seqLen"],
             dropout=dropout,
         )
-        model_a4 = create_variant_model(spec_a4).to(device)
+        model_a4 = createVariantModel(spec_a4).to(device)
         model_a4.load_state_dict(a0_state, strict=False)
         metrics_a4 = evaluate_simple(model_a4, test_loader, criterion, device)
 
@@ -787,14 +752,14 @@ def study_quant(args) -> None:
     # Build baseline A0 model and evaluate FP32 on CPU for comparability with quant.
     dropout = float(ds_cfg["dropout"])
 
-    spec = make_variant_spec(
+    spec = makeVariantSpec(
         variantId="A0",
         numClasses=ds_cfg["numClasses"],
         inChannels=ds_cfg["inputChannels"],
         seqLen=ds_cfg["seqLen"],
         dropout=dropout,
     )
-    model_fp32 = create_variant_model(spec)
+    model_fp32 = createVariantModel(spec)
     model_fp32.load_state_dict(state, strict=False)
     model_fp32.eval()
 
@@ -908,8 +873,7 @@ def study_gradcam(args) -> None:
     payload = _safe_torch_load(ckpt_path)
     state = payload["model_state_dict"]
 
-    # Build base model (frozen) for interpretability target.
-    model = LightDeepConvLSTM(
+    model = MicroBiConvLSTM(
         numClasses=ds_cfg["numClasses"],
         inChannels=ds_cfg["inputChannels"],
         seqLen=ds_cfg["seqLen"],
@@ -1045,10 +1009,9 @@ def study_sensitivity(args) -> None:
     payload = _safe_torch_load(ckpt_path)
     state = payload["model_state_dict"]
 
-    # CPU inference for deterministic corruption evaluations
     device = torch.device("cpu")
 
-    model = LightDeepConvLSTM(
+    model = MicroBiConvLSTM(
         numClasses=ds_cfg["numClasses"],
         inChannels=ds_cfg["inputChannels"],
         seqLen=ds_cfg["seqLen"],
@@ -1057,7 +1020,6 @@ def study_sensitivity(args) -> None:
     ).to(device)
     model.load_state_dict(state, strict=False)
 
-    # Baseline loader (with preprocessing)
     _, test_loader, class_weights = load_dataset(dataset, ds_cfg["batchSize"], bypass_preprocessing=False)
     if class_weights is not None:
         criterion = nn.CrossEntropyLoss(weight=class_weights)
@@ -1138,9 +1100,9 @@ def write_publication_tables_stub() -> None:
     if p.exists():
         return
 
-    content = """# LightDeepConvLSTM Ablation Studies (Auto-Generated)
+    content = """# MicroBiConvLSTM Ablation Studies (Auto-Generated)
 
-> This file is written by `scripts/ablationStudiesLightDeepConvLSTM.py`.
+> This file is written by `scripts/ablationStudiesMicroBiConvLstm.py`.
 > Run studies to populate metrics.
 
 ## Table I: Architectural Ablation Results

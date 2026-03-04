@@ -38,9 +38,9 @@ This directory contains the MicroBiConvLSTM model implementation and its ablatio
 
 | File | Description | Key Exports |
 |------|-------------|-------------|
-| `__init__.py` | Package initialization. Imports and exposes all model classes and factory functions. | `LightDeepConvLSTM`, `createLightDeepConvLSTM`, `LIGHTDEEPCONVLSTM_CONFIG`, `LightDeepConvLSTMVariant`, `LightDeepConvLSTMVariantSpec`, `create_variant_model`, `make_variant_spec` |
-| `light_deep_conv_lstm.py` | The main MicroBiConvLSTM model implementation. Contains the frozen architecture specification with two Conv1D blocks, a bidirectional LSTM, temporal aggregation, and a linear classification head. Includes weight initialization, parameter counting, and a factory function for dataset-specific model creation. | `LightDeepConvLSTM` (class), `createLightDeepConvLSTM` (factory), `LIGHTDEEPCONVLSTM_CONFIG` (dict) |
-| `light_deep_conv_lstm_variants.py` | Ablation variant implementations for controlled architectural studies. Provides variants A0 through A4 without modifying the frozen reference model. Each variant modifies a specific architectural component (pooling, directionality, number of conv blocks, aggregation method). | `LightDeepConvLSTMVariant` (class), `LightDeepConvLSTMVariantSpec` (dataclass), `make_variant_spec` (function), `create_variant_model` (function) |
+| `__init__.py` | Package initialization. Imports and exposes all model classes and factory functions. | `MicroBiConvLSTM`, `createMicroBiConvLstm`, `MICRO_BI_CONV_LSTM_CONFIG`, `MicroBiConvLSTMVariant`, `MicroBiConvLSTMVariantSpec`, `createVariantModel`, `makeVariantSpec` |
+| `microBiConvLstm.py` | The main MicroBiConvLSTM model implementation. Contains the frozen architecture specification with two Conv1D blocks, a bidirectional LSTM, temporal aggregation, and a linear classification head. Includes weight initialization, parameter counting, and a factory function for dataset-specific model creation. | `MicroBiConvLSTM` (class), `createMicroBiConvLstm` (factory), `MICRO_BI_CONV_LSTM_CONFIG` (dict) |
+| `microBiConvLstmVariants.py` | Ablation variant implementations for controlled architectural studies. Provides variants A0 through A4 without modifying the frozen reference model. Each variant modifies a specific architectural component (pooling, directionality, number of conv blocks, aggregation method). | `MicroBiConvLSTMVariant` (class), `MicroBiConvLSTMVariantSpec` (dataclass), `makeVariantSpec` (function), `createVariantModel` (function) |
 
 ### Model Architecture Details.
 
@@ -127,11 +127,11 @@ This directory contains all executable scripts for training, hyperparameter opti
 | File | Description | Key Functions |
 |------|-------------|---------------|
 | `__init__.py` | Package initialization for scripts module. | N/A |
-| `trainLightDeepConvLSTM.py` | Training script for MicroBiConvLSTM. Supports multi-seed training with early stopping, AMP/FP16 acceleration, cosine annealing LR scheduling, and comprehensive logging. Uses dataset-specific HPO-tuned hyperparameters. | `trainModel`, `trainMultiSeed` (via CLI) |
+| `trainMicroBiConvLstm.py` | Training script for MicroBiConvLSTM. Supports multi-seed training with early stopping, AMP/FP16 acceleration, cosine annealing LR scheduling, and comprehensive logging. Uses dataset-specific HPO-tuned hyperparameters. | `trainModel`, `trainMultiSeed` (via CLI) |
 | `trainBaselines.py` | Training script for baseline models (TinyHAR, TinierHAR, DeepConvLSTM). Same training protocol as MicroBiConvLSTM for fair comparison. | `trainModel`, `runMultiSeed` |
-| `hpoLightDeepConvLSTM.py` | Hyperparameter optimization for MicroBiConvLSTM using Optuna with TPE sampler. Tunes learning rate, weight decay, and dropout while keeping the architecture frozen. 50 trials per dataset with median pruning. | `runHPO`, `objective` |
+| `hpoMicroBiConvLstm.py` | Hyperparameter optimization for MicroBiConvLSTM using Optuna with TPE sampler. Tunes learning rate, weight decay, and dropout while keeping the architecture frozen. 50 trials per dataset with median pruning. | `runHPO`, `objective` |
 | `hpoBaselines.py` | Hyperparameter optimization for baseline models using the same Optuna configuration as MicroBiConvLSTM HPO for fairness. | `runHPO`, `runAllHPO`, `objective` |
-| `ablationStudiesLightDeepConvLSTM.py` | Ablation study runner supporting five study types: architectural ablations (A0-A4), Pareto grid search (convFilters x lstmHidden), complexity scaling analysis, INT8 post-training quantization simulation, and sensitivity/robustness evaluations. | `study_arch`, `study_pareto`, `study_complexity`, `study_quant` |
+| `ablationStudiesMicroBiConvLstm.py` | Ablation study runner supporting five study types: architectural ablations (A0-A4), Pareto grid search (convFilters x lstmHidden), complexity scaling analysis, INT8 post-training quantization simulation, and sensitivity/robustness evaluations. | `study_arch`, `study_pareto`, `study_complexity`, `study_quant` |
 | `benchmarkMemoryFootprint.py` | Memory footprint benchmarking script. Measures parameter count, FP32/INT8 model file sizes, state dictionary sizes, and peak inference memory for MicroBiConvLSTM and all baselines. | `benchmark_model`, `create_all_models` |
 | `create_paper_figures.py` | Publication figure generation script. Creates TinyHAR-style benchmark comparison grids, ablation result plots, Pareto efficiency charts, radar comparisons, and efficiency heatmaps using matplotlib. | Multiple figure creation functions |
 | `visualize_sensor_waves.py` | Sensor time series visualization script. Creates publication-quality plots of accelerometer and gyroscope data from UCI-HAR showing different activity patterns. | `create_vertical_wave_visualization` |
@@ -188,14 +188,14 @@ This directory contains all experiment results in both Markdown summary format a
 
 Contains JSON files with HPO trial results for each model-dataset combination. File naming convention: `hpo_{model}_{dataset}.json`.
 
-Models covered: `lightdeepconvlstm`, `deepconvlstm`, `tinyhar`, `tinierhar`.
+Models covered: `MicroBiConvLSTM`, `deepconvlstm`, `tinyhar`, `tinierhar`.
 Datasets covered: `ucihar`, `motionsense`, `wisdm`, `pamap2`, `opportunity`, `unimib`, `skoda`, `daphnet`.
 
 ### results/training/ Subdirectory.
 
 Contains JSON files with multi-seed training results for each model-dataset combination. File naming convention: `{model}_{dataset}.json`.
 
-Models covered: `lightdeepconvlstm`, `deepconvlstm`, `tinyhar`, `tinierhar`.
+Models covered: `MicroBiConvLSTM`, `deepconvlstm`, `tinyhar`, `tinierhar`.
 Datasets covered: All eight benchmark datasets.
 
 ---
@@ -212,7 +212,7 @@ Contains all publication-quality figures used in the research paper and document
 
 | File | Description |
 |------|-------------|
-| `LightDeepConvLSTM_Architecture.png` | Architecture diagram showing the five stages of MicroBiConvLSTM (Conv Stem, Conv Block, BiLSTM, Aggregation, Classification Head). |
+| `MicroBiConvLSTM_Architecture.png` | Architecture diagram showing the five stages of MicroBiConvLSTM (Conv Stem, Conv Block, BiLSTM, Aggregation, Classification Head). |
 | `benchmark_comparison_grid.png` | Grid figure comparing all models across all datasets on multiple metrics (parameters, MACs, FLOPs, F1, model size, efficiency ratios). |
 | `ablation_study_grid.png` | Grid figure showing ablation variant results (A0-A4) across all eight datasets. |
 | `ablation_absolute.png` | Absolute ablation results comparing each variant against the base model. |

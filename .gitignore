@@ -41,3 +41,6 @@ hpo_results/
 
 # Logs
 *.log
+
+# Results (generated locally)
+results/

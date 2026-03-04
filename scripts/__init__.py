@@ -1,11 +1,10 @@
-"""
-LightDeepConvLSTM Scripts Package
+"""MicroBiConvLSTM Scripts Package.
 
-This package contains training and HPO scripts for LightDeepConvLSTM.
+Training, HPO, ablation, and benchmarking scripts for MicroBiConvLSTM.
 """
 
 __all__ = [
-    'trainLightDeepConvLSTM',
-    'hpoLightDeepConvLSTM',
-    'ablationStudiesLightDeepConvLSTM',
+    'trainMicroBiConvLstm',
+    'hpoMicroBiConvLstm',
+    'ablationStudiesMicroBiConvLstm',
 ]

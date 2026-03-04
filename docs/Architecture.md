@@ -60,7 +60,7 @@
 
 ## Architecture Diagram:
 
-Diagram image file: `docs/OriginalImg/LightDeepConvLSTM_Architecture.png`.
+Diagram image file: `docs/OriginalImg/MicroBiConvLSTM_Architecture.png`.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -128,7 +128,7 @@ Diagram image file: `docs/OriginalImg/LightDeepConvLSTM_Architecture.png`.
 The architecture uses a **frozen configuration** that remains constant across all datasets. Only training hyperparameters (learning rate, weight decay, dropout) are tuned.
 
 ```python
-LIGHTDEEPCONVLSTM_CONFIG = {
+MICRO_BI_CONV_LSTM_CONFIG = {
     # Convolutional Parameters
     'convFilters': 16,        # Number of convolutional filters
     'convKernel': 5,          # Convolution kernel size
@@ -975,7 +975,7 @@ python scripts/hpoMicroBiConvLSTM.py --dataset ucihar --n-trials 50
 ## Citation:
 
 ```bibtex
-@article{lightdeepconvlstm_2026,
+@article{MicroBiConvLSTM_2026,
   title={MicroBiConvLSTM: An Ultra-Lightweight Convolutional LSTM 
          for Efficient Human Activity Recognition},
   author={...},

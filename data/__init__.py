@@ -1,7 +1,6 @@
-# Data Loaders Package for MicroBiConvLSTM Research Paper
-# 
-# IMPORTANT: Skoda uses OLD stratified split with shuffle (NOT temporal split)
-# This is intentional for reproducing the MicroBiConvLSTM paper results.
+# Data loaders package for the MicroBiConvLSTM research paper.
+# Skoda uses the old stratified split with shuffle (not temporal split)
+# to reproduce the MicroBiConvLSTM paper results.
 
 from .uciHar import UciHarDataset, getUciHarLoaders
 from .motionSense import MotionSenseDataset, getMotionSenseLoaders

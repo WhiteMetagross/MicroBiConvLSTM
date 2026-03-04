@@ -1,31 +1,28 @@
 """
-LightDeepConvLSTM Models Package
+MicroBiConvLSTM Models Package.
 
-This package contains the LightDeepConvLSTM architecture for Human Activity Recognition.
+Contains the MicroBiConvLSTM architecture and ablation variants for Human Activity Recognition.
 """
 
-from .light_deep_conv_lstm import (
-    LightDeepConvLSTM,
-    createLightDeepConvLSTM,
-    LIGHTDEEPCONVLSTM_CONFIG,
+from .microBiConvLstm import (
+    MicroBiConvLSTM,
+    createMicroBiConvLstm,
+    MICRO_BI_CONV_LSTM_CONFIG,
 )
 
-from .light_deep_conv_lstm_variants import (
-    LightDeepConvLSTMVariant,
-    LightDeepConvLSTMVariantSpec,
-    create_variant_model,
-    make_variant_spec,
+from .microBiConvLstmVariants import (
+    MicroBiConvLSTMVariant,
+    MicroBiConvLSTMVariantSpec,
+    createVariantModel,
+    makeVariantSpec,
 )
 
 __all__ = [
-    # Main Model
-    'LightDeepConvLSTM',
-    'createLightDeepConvLSTM',
-    'LIGHTDEEPCONVLSTM_CONFIG',
-
-    # Ablation Variants (kept separate from frozen reference model)
-    'LightDeepConvLSTMVariant',
-    'LightDeepConvLSTMVariantSpec',
-    'create_variant_model',
-    'make_variant_spec',
+    'MicroBiConvLSTM',
+    'createMicroBiConvLstm',
+    'MICRO_BI_CONV_LSTM_CONFIG',
+    'MicroBiConvLSTMVariant',
+    'MicroBiConvLSTMVariantSpec',
+    'createVariantModel',
+    'makeVariantSpec',
 ]

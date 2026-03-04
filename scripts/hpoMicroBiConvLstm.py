@@ -1,33 +1,12 @@
 """
-LightDeepConvLSTM Hyperparameter Optimization Script
+MicroBiConvLSTM Hyperparameter Optimization Script.
 
-This script performs HPO for the LightDeepConvLSTM architecture.
-It uses Optuna with TPE sampler and FROZEN architecture hyperparameters.
-
-FROZEN Architecture (NOT tuned):
-    convFilters = 16    (number of conv filters)
-    convKernel = 5      (convolution kernel size)
-    lstmHidden = 24     (LSTM hidden dimension)
-    lstmLayers = 1      (number of LSTM layers)
-    bidirectional = True (bidirectional LSTM)
-
-TUNED Hyperparameters (matches baselines for fairness):
-    learning_rate:  [1e-4, 1e-2]   log-uniform
-    weight_decay:   [1e-5, 0.05]   log-uniform
-    dropout:        [0.0, 0.5]     uniform
-
-HPO Configuration:
-    sampler = TPE (Tree-structured Parzen Estimator)
-    trials = 50
-    epochs per trial = 50 (matches baselines for fairness)
-    pruning = Median pruner with warmup
-    patience = 5 (early stopping)
-    optimization_target = F1 Score (Macro) - MAXIMIZED
+Tunes training hyperparameters (lr, weight_decay, dropout) while keeping
+the architecture frozen. Uses Optuna TPE sampler with median pruning.
 
 Usage:
-    python hpoLightDeepConvLSTM.py --dataset ucihar --n-trials 50
-    python hpoLightDeepConvLSTM.py --dataset pamap2 --n-trials 100 --epochs 100
-    python hpoLightDeepConvLSTM.py --dataset all --n-trials 50
+    python hpoMicroBiConvLstm.py --dataset ucihar --n-trials 50
+    python hpoMicroBiConvLstm.py --dataset all --n-trials 50
 """
 
 import os
@@ -54,10 +33,8 @@ from optuna.pruners import MedianPruner
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from models import LightDeepConvLSTM
+from models import MicroBiConvLSTM
 
-
-# ============== Dataset Configurations ==============
 
 DATASET_CONFIGS = {
     'ucihar': {
@@ -149,26 +126,11 @@ def getDevice():
 
 
 def loadDataset(datasetName: str, batchSize: int):
-    """
-    Load dataset with train/val splits.
-    
-    Uses local data loaders from LightDeepConvLSTM/data with:
-    - Signal Rescue filters for PAMAP2, Skoda, Daphnet
-    - Class weights for imbalanced datasets
-    - OLD stratified shuffle split for Skoda (paper reproducibility)
-    """
-    import sys
-    from pathlib import Path
-    
-    # Add local data folder to path (self-contained for LightDeepConvLSTM paper)
+    """Load train/test data loaders and optional class weights."""
     dataPath = Path(__file__).parent.parent / 'data'
     if str(dataPath) not in sys.path:
         sys.path.insert(0, str(dataPath))
-    
-    config = DATASET_CONFIGS[datasetName]
     classWeights = None
-    
-    # Convert dataset name to lowercase for loader imports
     dsName = datasetName.lower()
     
     if dsName == 'ucihar':
@@ -202,7 +164,6 @@ def loadDataset(datasetName: str, batchSize: int):
             root='./datasets/UniMiB-SHAR', batchSize=batchSize, numWorkers=0
         )
     elif dsName == 'skoda':
-        # Uses OLD stratified shuffle split for LightDeepConvLSTM paper reproducibility
         from skoda import getSkodaLoaders
         trainLoader, testLoader, classWeights = getSkodaLoaders(
             root='./datasets/Skoda', batchSize=batchSize, numWorkers=0, returnWeights=True
@@ -309,16 +270,7 @@ def objective(
     epochs: int = 50,
     patience: int = 5,
 ) -> float:
-    """
-    Optuna objective function for HPO.
-    
-    Tunes ONLY training hyperparameters:
-    - learning_rate
-    - weight_decay
-    - dropout
-    
-    Returns F1 score (to be maximized).
-    """
+    """Optuna objective: tunes lr, weight_decay, dropout. Returns best F1."""
     # Sample hyperparameters
     lr = trial.suggest_float('learning_rate', 1e-4, 1e-2, log=True)
     weightDecay = trial.suggest_float('weight_decay', 1e-5, 0.05, log=True)
@@ -326,8 +278,7 @@ def objective(
     
     config = DATASET_CONFIGS[datasetName]
     
-    # Create model with FROZEN architecture
-    model = LightDeepConvLSTM(
+    model = MicroBiConvLSTM(
         numClasses=config['numClasses'],
         inChannels=config['inputChannels'],
         seqLen=config['seqLen'],
@@ -335,7 +286,6 @@ def objective(
         aggregation='last',
     ).to(device)
     
-    # Setup training
     if classWeights is not None:
         cw = classWeights.to(device)
         criterion = nn.CrossEntropyLoss(weight=cw)
@@ -391,37 +341,21 @@ def runHPO(
     saveDir: str = './hpo_results',
     verbose: bool = True,
 ) -> dict:
-    """
-    Run Hyperparameter Optimization for LightDeepConvLSTM on a specific dataset.
-    
-    Args:
-        datasetName: Name of the dataset
-        nTrials: Number of HPO trials
-        epochs: Epochs per trial
-        patience: Early stopping patience per trial
-        seed: Random seed for reproducibility
-        saveDir: Directory to save results
-        verbose: Whether to print progress
-        
-    Returns:
-        Dictionary containing HPO results
-    """
+    """Run HPO for MicroBiConvLSTM on a specific dataset. Returns results dict."""
     setSeed(seed)
     device = getDevice()
     config = DATASET_CONFIGS[datasetName]
     
     if verbose:
         print(f"\n{'='*60}")
-        print(f"HPO for LightDeepConvLSTM on {config['name']}")
+        print(f"HPO for MicroBiConvLSTM on {config['name']}")
         print(f"Trials: {nTrials} | Epochs/trial: {epochs} | Device: {device}")
         print(f"{'='*60}")
     
-    # Load dataset
     trainLoader, valLoader, classWeights = loadDataset(
         datasetName, config['batchSize']
     )
     
-    # Create Optuna study
     sampler = TPESampler(seed=seed)
     pruner = MedianPruner(n_startup_trials=5, n_warmup_steps=10)
     
@@ -429,10 +363,9 @@ def runHPO(
         direction='maximize',  # Maximize F1 score
         sampler=sampler,
         pruner=pruner,
-        study_name=f'lightdeepconvlstm_{datasetName}',
+        study_name=f'microBiConvLstm_{datasetName}',
     )
     
-    # Run optimization
     study.optimize(
         lambda trial: objective(
             trial, datasetName, trainLoader, valLoader, 
@@ -442,7 +375,6 @@ def runHPO(
         show_progress_bar=verbose,
     )
     
-    # Get best results
     bestTrial = study.best_trial
     
     if verbose:
@@ -455,9 +387,8 @@ def runHPO(
         for key, value in bestTrial.params.items():
             print(f"  {key}: {value:.6f}")
     
-    # Save results
     os.makedirs(saveDir, exist_ok=True)
-    resultsPath = os.path.join(saveDir, f'lightdeepconvlstm_{datasetName}_hpo.json')
+    resultsPath = os.path.join(saveDir, f'microBiConvLstm_{datasetName}_hpo.json')
     
     results = {
         'dataset': datasetName,
@@ -487,9 +418,9 @@ def runHPO(
 
 
 def main():
-    """Main entry point for HPO script."""
+    """Main entry point."""
     parser = argparse.ArgumentParser(
-        description='Hyperparameter Optimization for LightDeepConvLSTM'
+        description='Hyperparameter Optimization for MicroBiConvLSTM'
     )
     parser.add_argument(
         '--dataset', type=str, default='ucihar',
@@ -539,9 +470,8 @@ def main():
         )
         allResults[dataset] = results
     
-    # Print final summary
     print(f"\n{'='*60}")
-    print(f"HPO Summary - LightDeepConvLSTM")
+    print(f"HPO Summary - MicroBiConvLSTM")
     print(f"{'='*60}")
     print(f"\n{'Dataset':<15} {'Best F1':<12} {'LR':<12} {'WD':<12} {'Dropout':<10}")
     print(f"{'-'*60}")
@@ -553,7 +483,7 @@ def main():
               f"{params['weight_decay']:.6f}   "
               f"{params['dropout']:.3f}")
     
-    print(f"\n✓ HPO complete! Results saved to: {args.save_dir}")
+    print(f"\nHPO complete. Results saved to: {args.save_dir}")
 
 
 if __name__ == '__main__':

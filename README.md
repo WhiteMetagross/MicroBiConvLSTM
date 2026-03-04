@@ -14,7 +14,7 @@ The architecture consists of a two-stage convolutional feature extractor followe
 
 This repository contains the complete source code, baseline implementations, training scripts, hyperparameter optimization (HPO) pipelines, ablation study runners, and benchmark results presented in the research paper.
 
-![MicroBiConvLSTM Architecture](docs/figures/LightDeepConvLSTM_Architecture.png)
+![MicroBiConvLSTM Architecture](docs/figures/MicroBiConvLSTM_Architecture.png)
 
 *Figure 1: The MicroBiConvLSTM architecture. Input sensor data passes through two Conv1D blocks with batch normalization, ReLU activation, and max pooling, followed by a bidirectional LSTM and a classification head. The total parameter count is approximately 10,454 for UCI-HAR (9 input channels, 6 classes).*
 
@@ -137,8 +137,8 @@ Micro-Bi-ConvLSTM/
 |-- requirements.txt             Python dependencies.
 |-- models/                      MicroBiConvLSTM model implementations.
 |   |-- __init__.py
-|   |-- light_deep_conv_lstm.py
-|   |-- light_deep_conv_lstm_variants.py
+|   |-- microBiConvLstm.py
+|   |-- microBiConvLstmVariants.py
 |-- baselines/                   Baseline model implementations.
 |   |-- __init__.py
 |   |-- deepConvLstm.py
@@ -156,11 +156,11 @@ Micro-Bi-ConvLSTM/
 |   |-- daphnet.py
 |-- scripts/                     Training, HPO, and analysis scripts.
 |   |-- __init__.py
-|   |-- trainLightDeepConvLSTM.py
+|   |-- trainMicroBiConvLstm.py
 |   |-- trainBaselines.py
-|   |-- hpoLightDeepConvLSTM.py
+|   |-- hpoMicroBiConvLstm.py
 |   |-- hpoBaselines.py
-|   |-- ablationStudiesLightDeepConvLSTM.py
+|   |-- ablationStudiesMicroBiConvLstm.py
 |   |-- benchmarkMemoryFootprint.py
 |   |-- create_paper_figures.py
 |   |-- visualize_sensor_waves.py
@@ -193,7 +193,7 @@ pip install -r requirements.txt
 3. Train MicroBiConvLSTM on UCI-HAR.
 
 ```bash
-python scripts/trainLightDeepConvLSTM.py --dataset ucihar --seeds 5
+python scripts/trainMicroBiConvLstm.py --dataset ucihar --seeds 5
 ```
 
 4. Train all baselines on UCI-HAR.
@@ -205,13 +205,13 @@ python scripts/trainBaselines.py --dataset ucihar --model all --seeds 5
 5. Run hyperparameter optimization.
 
 ```bash
-python scripts/hpoLightDeepConvLSTM.py --dataset ucihar --n-trials 50
+python scripts/hpoMicroBiConvLstm.py --dataset ucihar --n-trials 50
 ```
 
 6. Run ablation studies.
 
 ```bash
-python scripts/ablationStudiesLightDeepConvLSTM.py --dataset ucihar --study arch --seeds 5
+python scripts/ablationStudiesMicroBiConvLstm.py --dataset ucihar --study arch --seeds 5
 ```
 
 For detailed instructions, see [Usage.md](Usage.md) and [InstallationAndSetup.md](InstallationAndSetup.md).

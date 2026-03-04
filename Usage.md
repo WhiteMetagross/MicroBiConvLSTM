@@ -78,12 +78,12 @@ Download each dataset manually and extract it into the corresponding folder unde
 
 ## Training MicroBiConvLSTM.
 
-The main training script is `scripts/trainLightDeepConvLSTM.py`. It trains the MicroBiConvLSTM model with HPO-tuned hyperparameters, multi-seed evaluation, early stopping, and AMP/FP16 acceleration.
+The main training script is `scripts/trainMicroBiConvLstm.py`. It trains the MicroBiConvLSTM model with HPO-tuned hyperparameters, multi-seed evaluation, early stopping, and AMP/FP16 acceleration.
 
 ### Training on a Single Dataset.
 
 ```bash
-python scripts/trainLightDeepConvLSTM.py --dataset ucihar --seeds 5
+python scripts/trainMicroBiConvLstm.py --dataset ucihar --seeds 5
 ```
 
 This command trains MicroBiConvLSTM on UCI-HAR with 5 random seeds derived from the master seed (17). Results are saved to `results/training/` and checkpoints are saved to `checkpoints/`.
@@ -91,7 +91,7 @@ This command trains MicroBiConvLSTM on UCI-HAR with 5 random seeds derived from 
 ### Training on All Datasets.
 
 ```bash
-python scripts/trainLightDeepConvLSTM.py --dataset all --seeds 5
+python scripts/trainMicroBiConvLstm.py --dataset all --seeds 5
 ```
 
 This sequentially trains the model on all eight datasets.
@@ -118,8 +118,8 @@ This sequentially trains the model on all eight datasets.
 
 After training, the following files are produced.
 
-- `checkpoints/lightdeepconvlstm_{dataset}_seed{seed}.pt` -- Model checkpoint with the best weights.
-- `results/training/lightdeepconvlstm_{dataset}.json` -- Training results including accuracy, F1 score, training time, and epoch history.
+- `checkpoints/microBiConvLstm_{dataset}_seed{seed}.pt` -- Model checkpoint with the best weights.
+- `results/training/microBiConvLstm_{dataset}.json` -- Training results including accuracy, F1 score, training time, and epoch history.
 
 ---
 
@@ -169,13 +169,13 @@ HPO is performed using Optuna with a TPE (Tree-structured Parzen Estimator) samp
 ### HPO for MicroBiConvLSTM.
 
 ```bash
-python scripts/hpoLightDeepConvLSTM.py --dataset ucihar --n-trials 50
+python scripts/hpoMicroBiConvLstm.py --dataset ucihar --n-trials 50
 ```
 
 ### HPO for All Datasets.
 
 ```bash
-python scripts/hpoLightDeepConvLSTM.py --dataset all --n-trials 50
+python scripts/hpoMicroBiConvLstm.py --dataset all --n-trials 50
 ```
 
 ### HPO for Baseline Models.
@@ -212,7 +212,7 @@ python scripts/hpoBaselines.py --model all --dataset all --n-trials 50
 
 ### Output Files.
 
-- `hpo_results/lightdeepconvlstm_{dataset}_hpo.json` -- HPO results including best trial, optimal parameters, and all trial data.
+- `hpo_results/microBiConvLstm_{dataset}_hpo.json` -- HPO results including best trial, optimal parameters, and all trial data.
 - `hpo_results/{model}_{dataset}_hpo.json` -- Baseline HPO results.
 
 ---
@@ -226,7 +226,7 @@ The ablation study runner supports five distinct study types. All studies use a 
 Trains and evaluates the five architectural variants.
 
 ```bash
-python scripts/ablationStudiesLightDeepConvLSTM.py --dataset ucihar --study arch --seeds 5
+python scripts/ablationStudiesMicroBiConvLstm.py --dataset ucihar --study arch --seeds 5
 ```
 
 ### Pareto Grid Search.
@@ -234,13 +234,13 @@ python scripts/ablationStudiesLightDeepConvLSTM.py --dataset ucihar --study arch
 Explores the parameter space by varying convFilters and lstmHidden sizes.
 
 ```bash
-python scripts/ablationStudiesLightDeepConvLSTM.py --dataset ucihar --study pareto --seeds 1
+python scripts/ablationStudiesMicroBiConvLstm.py --dataset ucihar --study pareto --seeds 1
 ```
 
 The default grid searches over `convFilters` in {8, 16, 24} and `lstmHidden` in {16, 24, 32}. These can be customized.
 
 ```bash
-python scripts/ablationStudiesLightDeepConvLSTM.py --dataset ucihar --study pareto --conv-grid 8,16,24,32 --lstm-grid 16,24,32,48
+python scripts/ablationStudiesMicroBiConvLstm.py --dataset ucihar --study pareto --conv-grid 8,16,24,32 --lstm-grid 16,24,32,48
 ```
 
 ### Complexity Scaling Verification.
@@ -248,7 +248,7 @@ python scripts/ablationStudiesLightDeepConvLSTM.py --dataset ucihar --study pare
 Verifies O(N) complexity by computing MACs at different sequence lengths.
 
 ```bash
-python scripts/ablationStudiesLightDeepConvLSTM.py --dataset ucihar --study complexity
+python scripts/ablationStudiesMicroBiConvLstm.py --dataset ucihar --study complexity
 ```
 
 ### INT8 Post-Training Quantization.
@@ -256,7 +256,7 @@ python scripts/ablationStudiesLightDeepConvLSTM.py --dataset ucihar --study comp
 Evaluates accuracy retention after dynamic INT8 quantization.
 
 ```bash
-python scripts/ablationStudiesLightDeepConvLSTM.py --dataset ucihar --study quant
+python scripts/ablationStudiesMicroBiConvLstm.py --dataset ucihar --study quant
 ```
 
 This requires a trained A0 checkpoint. Run `--study arch` first.
@@ -266,16 +266,16 @@ This requires a trained A0 checkpoint. Run `--study arch` first.
 Evaluates model robustness under channel dropout, sampling jitter, and preprocessing bypass.
 
 ```bash
-python scripts/ablationStudiesLightDeepConvLSTM.py --dataset pamap2 --study sensitivity
+python scripts/ablationStudiesMicroBiConvLstm.py --dataset pamap2 --study sensitivity
 ```
 
 ### Running All Studies on All Datasets.
 
 ```bash
 for dataset in ucihar motionsense wisdm pamap2 opportunity unimib skoda daphnet; do
-    python scripts/ablationStudiesLightDeepConvLSTM.py --dataset $dataset --study arch --seeds 5
-    python scripts/ablationStudiesLightDeepConvLSTM.py --dataset $dataset --study pareto --seeds 1
-    python scripts/ablationStudiesLightDeepConvLSTM.py --dataset $dataset --study complexity
+    python scripts/ablationStudiesMicroBiConvLstm.py --dataset $dataset --study arch --seeds 5
+    python scripts/ablationStudiesMicroBiConvLstm.py --dataset $dataset --study pareto --seeds 1
+    python scripts/ablationStudiesMicroBiConvLstm.py --dataset $dataset --study complexity
 done
 ```
 
@@ -364,10 +364,10 @@ This produces vertical wave plots showing accelerometer and gyroscope channels f
 ### Creating a MicroBiConvLSTM Model in Python.
 
 ```python
-from models import createLightDeepConvLSTM
+from models import createMicroBiConvLstm
 
 # Create model for UCI-HAR dataset.
-model = createLightDeepConvLSTM('ucihar', dropout=0.15)
+model = createMicroBiConvLstm('ucihar', dropout=0.15)
 
 # Print model info.
 info = model.getModelInfo()
@@ -379,11 +379,11 @@ for key, value in info.items():
 
 ```python
 import torch
-from models import createLightDeepConvLSTM
+from models import createMicroBiConvLstm
 
 # Create and load trained model.
-model = createLightDeepConvLSTM('ucihar', dropout=0.15)
-checkpoint = torch.load('checkpoints/lightdeepconvlstm_ucihar_seed42.pt')
+model = createMicroBiConvLstm('ucihar', dropout=0.15)
+checkpoint = torch.load('checkpoints/microBiConvLstm_ucihar_seed42.pt')
 model.load_state_dict(checkpoint['model_state_dict'])
 model.eval()
 
@@ -413,17 +413,17 @@ tinier = createTinierHar('ucihar')
 ### Creating Ablation Variants.
 
 ```python
-from models import make_variant_spec, create_variant_model
+from models import makeVariantSpec, createVariantModel
 
 # Create the A2 (Unidirectional) variant for UCI-HAR.
-spec = make_variant_spec(
+spec = makeVariantSpec(
     variantId='A2',
     numClasses=6,
     inChannels=9,
     seqLen=128,
     dropout=0.15,
 )
-model = create_variant_model(spec)
+model = createVariantModel(spec)
 ```
 
 ---

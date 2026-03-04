@@ -1,12 +1,9 @@
-"""
-Baseline Training Script for MicroBiConvLSTM Research Paper
+"""Baseline Training Script for MicroBiConvLSTM Research Paper.
 
 Trains baseline models (TinyHAR, TinierHAR, DeepConvLSTM) on HAR datasets.
-These baselines do NOT include Mamba-based models.
 
 Usage:
     python trainBaselines.py --dataset ucihar --model all --seeds 5
-    python trainBaselines.py --dataset all --model tinyhar --seeds 3
     python trainBaselines.py --dataset skoda --model deepconvlstm --seeds 5
 """
 
@@ -30,16 +27,14 @@ from sklearn.metrics import accuracy_score, f1_score, confusion_matrix
 
 # Add parent directory to path for imports
 _THIS_FILE = Path(__file__).resolve()
-_LIGHTDEEPCONVLSTM_DIR = _THIS_FILE.parents[1]
+_REPO_DIR = _THIS_FILE.parents[1]
 _REPO_ROOT = _THIS_FILE.parents[2]
 
-sys.path.insert(0, str(_LIGHTDEEPCONVLSTM_DIR))
+sys.path.insert(0, str(_REPO_DIR))
 sys.path.insert(0, str(_REPO_ROOT))
 
 from baselines import TinyHAR, TinierHAR, DeepConvLSTM
 
-
-# ============== Constants ==============
 
 MASTER_SEED = 17
 
@@ -131,8 +126,6 @@ DATASET_CONFIGS = {
 }
 
 
-# ============== Utilities ==============
-
 def setSeed(seed: int):
     """Set random seeds for reproducibility."""
     random.seed(seed)
@@ -194,7 +187,6 @@ def loadDataset(datasetName: str, batchSize: int) -> Tuple[DataLoader, DataLoade
             root='./datasets/UniMiB-SHAR', batchSize=batchSize, numWorkers=0
         )
     elif dsName == 'skoda':
-        # Use LOCAL Skoda loader with OLD stratified split + shuffle
         from data.skoda import getSkodaLoaders
         trainLoader, testLoader, classWeights = getSkodaLoaders(
             root='./datasets/Skoda', batchSize=batchSize, numWorkers=0, returnWeights=True
@@ -235,8 +227,6 @@ def createModel(modelName: str, config: dict) -> nn.Module:
     else:
         raise ValueError(f"Unknown model: {modelName}")
 
-
-# ============== Training ==============
 
 def trainEpoch(
     model: nn.Module,
@@ -377,7 +367,7 @@ def trainModel(
     bestF1 = 0.0
     bestEpoch = 0
     noBetterCount = 0
-    history = {'train_loss': [], 'train_f1': [], 'test_loss': [], 'test_f1': []}
+    history = {'trainLoss': [], 'trainF1': [], 'testLoss': [], 'testF1': []}
     
     startTime = time.time()
     
@@ -392,10 +382,10 @@ def trainModel(
         
         scheduler.step()
         
-        history['train_loss'].append(trainLoss)
-        history['train_f1'].append(trainF1)
-        history['test_loss'].append(testLoss)
-        history['test_f1'].append(testF1)
+        history['trainLoss'].append(trainLoss)
+        history['trainF1'].append(trainF1)
+        history['testLoss'].append(testLoss)
+        history['testF1'].append(testF1)
         
         if testF1 > bestF1:
             bestF1 = testF1
@@ -431,10 +421,10 @@ def trainModel(
         'model': modelName,
         'dataset': datasetName,
         'seed': seed,
-        'best_epoch': bestEpoch,
-        'test_accuracy': float(finalAcc),
-        'test_f1': float(finalF1),
-        'training_time': totalTime,
+        'bestEpoch': bestEpoch,
+        'testAccuracy': float(finalAcc),
+        'testF1': float(finalF1),
+        'trainingTime': totalTime,
         'parameters': sum(p.numel() for p in model.parameters()),
         'history': history,
     }
@@ -485,18 +475,18 @@ def runMultiSeed(
         results.append(result)
     
     # Aggregate
-    accuracies = [r['test_accuracy'] for r in results]
-    f1s = [r['test_f1'] for r in results]
-    
+accuracies = [r['testAccuracy'] for r in results]
+    f1s = [r['testF1'] for r in results]
+
     summary = {
         'model': modelName,
         'dataset': datasetName,
-        'num_seeds': numSeeds,
-        'accuracy_mean': float(np.mean(accuracies)),
-        'accuracy_std': float(np.std(accuracies)),
-        'f1_mean': float(np.mean(f1s)),
-        'f1_std': float(np.std(f1s)),
-        'individual_results': results,
+        'numSeeds': numSeeds,
+        'accuracyMean': float(np.mean(accuracies)),
+        'accuracyStd': float(np.std(accuracies)),
+        'f1Mean': float(np.mean(f1s)),
+        'f1Std': float(np.std(f1s)),
+        'individualResults': results,
     }
     
     # Save summary
@@ -504,13 +494,13 @@ def runMultiSeed(
     saveDir.mkdir(parents=True, exist_ok=True)
     
     with open(saveDir / "summary.json", 'w') as f:
-        summaryForJson = {k: v for k, v in summary.items() if k != 'individual_results'}
+        summaryForJson = {k: v for k, v in summary.items() if k != 'individualResults'}
         json.dump(summaryForJson, f, indent=2)
     
     print(f"\n{'='*60}")
     print(f"SUMMARY: {modelName.upper()} on {datasetName.upper()}")
-    print(f"  Accuracy: {summary['accuracy_mean']*100:.2f}% ± {summary['accuracy_std']*100:.2f}%")
-    print(f"  F1 Score: {summary['f1_mean']*100:.2f}% ± {summary['f1_std']*100:.2f}%")
+    print(f"  Accuracy: {summary['accuracyMean']*100:.2f}% +/- {summary['accuracyStd']*100:.2f}%")
+    print(f"  F1 Score: {summary['f1Mean']*100:.2f}% +/- {summary['f1Std']*100:.2f}%")
     print(f"{'='*60}")
     
     return summary
@@ -564,8 +554,8 @@ def main():
     print(f"{'Model':<15} {'Dataset':<15} {'Accuracy':<20} {'F1 Score':<20}")
     print("-"*80)
     for s in allSummaries:
-        acc = f"{s['accuracy_mean']*100:.2f}% ± {s['accuracy_std']*100:.2f}%"
-        f1 = f"{s['f1_mean']*100:.2f}% ± {s['f1_std']*100:.2f}%"
+        acc = f"{s['accuracyMean']*100:.2f}% +/- {s['accuracyStd']*100:.2f}%"
+        f1 = f"{s['f1Mean']*100:.2f}% +/- {s['f1Std']*100:.2f}%"
         print(f"{s['model']:<15} {s['dataset']:<15} {acc:<20} {f1:<20}")
     print("="*80)
 

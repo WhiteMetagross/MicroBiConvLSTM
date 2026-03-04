@@ -1,9 +1,4 @@
-"""
-Publication-Quality Visualizations for μBiConvLSTM (LightDeepConvLSTM) Research Paper
-Creates TinyHAR-style figures with datasets as columns and metrics as rows.
-
-Author: Senior AI Researcher
-"""
+"""Publication-quality visualizations for MicroBiConvLSTM research paper."""
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -85,14 +80,14 @@ plt.rcParams.update(DEFAULT_STYLE)
 
 # Model display names (μ = micro symbol U+03BC)
 MODEL_NAMES = {
-    'LightDeepConvLSTM': 'μBiConvLSTM',
+    'MicroBiConvLSTM': 'μBiConvLSTM',
     'DeepConvLSTM': 'DeepConvLSTM', 
     'TinyHAR': 'TinyHAR',
     'TinierHAR': 'TinierHAR',
 }
 
 # Model order for plotting (our model first, highlighted)
-MODELS = ['LightDeepConvLSTM', 'DeepConvLSTM', 'TinyHAR', 'TinierHAR']
+MODELS = ['MicroBiConvLSTM', 'DeepConvLSTM', 'TinyHAR', 'TinierHAR']
 
 # VIBRANT color scheme - highly distinguishable
 MODEL_COLORS = {
@@ -119,49 +114,49 @@ DATASETS = ['UCI-HAR', 'MotionSense', 'WISDM', 'PAMAP2', 'Opportunity', 'UniMiB'
 
 BENCHMARK_DATA = {
     'UCI-HAR': {
-        'LightDeepConvLSTM': {'params': 10454, 'macs': 420128, 'flops': 840256, 'f1': 93.41, 'f1_std': 0.35, 'acc': 93.33},
+        'MicroBiConvLSTM': {'params': 10454, 'macs': 420128, 'flops': 840256, 'f1': 93.41, 'f1_std': 0.35, 'acc': 93.33},
         'DeepConvLSTM': {'params': 132038, 'macs': 16621952, 'flops': 33243904, 'f1': 93.53, 'f1_std': 0.26, 'acc': 93.44},
         'TinyHAR': {'params': 42704, 'macs': 4890000, 'flops': 9780000, 'f1': 96.53, 'f1_std': 0.41, 'acc': 96.46},
         'TinierHAR': {'params': 16931, 'macs': 879968, 'flops': 1759936, 'f1': 96.37, 'f1_std': 0.57, 'acc': 96.30},
     },
     'MotionSense': {
-        'LightDeepConvLSTM': {'params': 10214, 'macs': 389408, 'flops': 778816, 'f1': 91.65, 'f1_std': 0.43, 'acc': 92.71},
+        'MicroBiConvLSTM': {'params': 10214, 'macs': 389408, 'flops': 778816, 'f1': 91.65, 'f1_std': 0.43, 'acc': 92.71},
         'DeepConvLSTM': {'params': 131078, 'macs': 16499072, 'flops': 32998144, 'f1': 92.90, 'f1_std': 0.96, 'acc': 94.12},
         'TinyHAR': {'params': 39248, 'macs': 3458064, 'flops': 6916128, 'f1': 92.67, 'f1_std': 0.67, 'acc': 94.00},
         'TinierHAR': {'params': 12323, 'macs': 603104, 'flops': 1206208, 'f1': 91.99, 'f1_std': 0.60, 'acc': 93.28},
     },
     'WISDM': {
-        'LightDeepConvLSTM': {'params': 9974, 'macs': 358688, 'flops': 717376, 'f1': 73.17, 'f1_std': 12.42, 'acc': 81.73},
+        'MicroBiConvLSTM': {'params': 9974, 'macs': 358688, 'flops': 717376, 'f1': 73.17, 'f1_std': 12.42, 'acc': 81.73},
         'DeepConvLSTM': {'params': 130118, 'macs': 16376192, 'flops': 32752384, 'f1': 81.84, 'f1_std': 1.46, 'acc': 83.17},
         'TinyHAR': {'params': 35792, 'macs': 2026128, 'flops': 4052256, 'f1': 77.09, 'f1_std': 4.95, 'acc': 83.83},
         'TinierHAR': {'params': 7715, 'macs': 326240, 'flops': 652480, 'f1': 83.06, 'f1_std': 3.24, 'acc': 86.35},
     },
     'PAMAP2': {
-        'LightDeepConvLSTM': {'params': 11548, 'macs': 522816, 'flops': 1045632, 'f1': 60.75, 'f1_std': 1.76, 'acc': 62.17},
+        'MicroBiConvLSTM': {'params': 11548, 'macs': 522816, 'flops': 1045632, 'f1': 60.75, 'f1_std': 1.76, 'acc': 62.17},
         'DeepConvLSTM': {'params': 135628, 'macs': 17031936, 'flops': 34063872, 'f1': 67.79, 'f1_std': 1.50, 'acc': 67.50},
         'TinyHAR': {'params': 54518, 'macs': 9663408, 'flops': 19326816, 'f1': 73.22, 'f1_std': 3.58, 'acc': 74.98},
         'TinierHAR': {'params': 32489, 'macs': 1803040, 'flops': 3606080, 'f1': 74.07, 'f1_std': 1.16, 'acc': 73.64},
     },
     'Opportunity': {
-        'LightDeepConvLSTM': {'params': 16005, 'macs': 1136880, 'flops': 2273760, 'f1': 87.58, 'f1_std': 0.73, 'acc': 86.62},
+        'MicroBiConvLSTM': {'params': 16005, 'macs': 1136880, 'flops': 2273760, 'f1': 87.58, 'f1_std': 0.73, 'acc': 86.62},
         'DeepConvLSTM': {'params': 154373, 'macs': 19489088, 'flops': 38978176, 'f1': 88.30, 'f1_std': 0.72, 'acc': 86.74},
         'TinyHAR': {'params': 123295, 'macs': 38301792, 'flops': 76603584, 'f1': 88.69, 'f1_std': 0.38, 'acc': 87.45},
         'TinierHAR': {'params': 124418, 'macs': 7340096, 'flops': 14680192, 'f1': 87.09, 'f1_std': 0.90, 'acc': 86.19},
     },
     'UniMiB': {
-        'LightDeepConvLSTM': {'params': 10121, 'macs': 358832, 'flops': 717664, 'f1': 79.43, 'f1_std': 1.66, 'acc': 91.13},
+        'MicroBiConvLSTM': {'params': 10121, 'macs': 358832, 'flops': 717664, 'f1': 79.43, 'f1_std': 1.66, 'acc': 91.13},
         'DeepConvLSTM': {'params': 130313, 'macs': 16376384, 'flops': 32752768, 'f1': 85.83, 'f1_std': 1.22, 'acc': 92.71},
         'TinyHAR': {'params': 35939, 'macs': 2026272, 'flops': 4052544, 'f1': 77.61, 'f1_std': 2.23, 'acc': 90.49},
         'TinierHAR': {'params': 7814, 'macs': 326336, 'flops': 652672, 'f1': 79.67, 'f1_std': 4.45, 'acc': 90.30},
     },
     'Skoda': {
-        'LightDeepConvLSTM': {'params': 12379, 'macs': 482768, 'flops': 965536, 'f1': 94.46, 'f1_std': 1.31, 'acc': 94.39},
+        'MicroBiConvLSTM': {'params': 12379, 'macs': 482768, 'flops': 965536, 'f1': 94.46, 'f1_std': 1.31, 'acc': 94.39},
         'DeepConvLSTM': {'params': 139083, 'macs': 13385152, 'flops': 26770304, 'f1': 94.63, 'f1_std': 2.47, 'acc': 94.88},
         'TinyHAR': {'params': 67141, 'macs': 11479968, 'flops': 22959936, 'f1': 97.01, 'f1_std': 0.53, 'acc': 97.14},
         'TinierHAR': {'params': 49352, 'macs': 2123868, 'flops': 4247736, 'f1': 96.99, 'f1_std': 0.76, 'acc': 96.88},
     },
     'Daphnet': {
-        'LightDeepConvLSTM': {'params': 10258, 'macs': 210016, 'flops': 420032, 'f1': 88.98, 'f1_std': 1.64, 'acc': 97.37},
+        'MicroBiConvLSTM': {'params': 10258, 'macs': 210016, 'flops': 420032, 'f1': 88.98, 'f1_std': 1.64, 'acc': 97.37},
         'DeepConvLSTM': {'params': 131778, 'macs': 8310912, 'flops': 16621824, 'f1': 88.95, 'f1_std': 2.26, 'acc': 97.37},
         'TinyHAR': {'params': 42508, 'macs': 2452176, 'flops': 4904352, 'f1': 86.42, 'f1_std': 3.64, 'acc': 96.44},
         'TinierHAR': {'params': 16799, 'macs': 439968, 'flops': 879936, 'f1': 89.84, 'f1_std': 1.90, 'acc': 97.41},
@@ -1296,7 +1291,7 @@ def main():
     original_output_dir.mkdir(parents=True, exist_ok=True)
     
     print("=" * 70)
-    print("Generating Publication Figures for μBiConvLSTM (LightDeepConvLSTM)")
+    print("Generating Publication Figures for μBiConvLSTM (MicroBiConvLSTM)")
     print("=" * 70)
     print(f"Output directory: {output_dir}")
     print(f"Original output directory: {original_output_dir}")

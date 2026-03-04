@@ -1,31 +1,10 @@
-"""
-Baseline Models Hyperparameter Optimization Script
+"""Baseline Models Hyperparameter Optimization Script.
 
-This script performs HPO for baseline models: TinyHAR, TinierHAR, DeepConvLSTM.
-Uses Optuna with TPE sampler for efficient hyperparameter search.
-
-Supported Models:
-    - TinyHAR: Cross-channel attention + temporal conv (~42k params)
-    - TinierHAR: Ultra-lightweight with depthwise separable conv (~17k params)
-    - DeepConvLSTM: Classic 4-conv + 2-LSTM architecture (~132k params)
-
-TUNED Hyperparameters:
-    learning_rate:  [1e-4, 1e-2]   log-uniform
-    weight_decay:   [1e-5, 0.05]   log-uniform
-    dropout:        [0.0, 0.5]     uniform
-
-HPO Configuration:
-    sampler = TPE (Tree-structured Parzen Estimator)
-    trials = 50 (default)
-    epochs per trial = 50
-    pruning = Median pruner with warmup
-    patience = 5 (early stopping)
-    optimization_target = F1 Score (Macro) - MAXIMIZED
+Tunes training hyperparameters (lr, weight_decay, dropout) for TinyHAR,
+TinierHAR, and DeepConvLSTM using Optuna TPE sampler.
 
 Usage:
     python hpoBaselines.py --model tinyhar --dataset ucihar --n-trials 50
-    python hpoBaselines.py --model tinierhar --dataset pamap2 --n-trials 100
-    python hpoBaselines.py --model deepconvlstm --dataset wisdm --epochs 100
     python hpoBaselines.py --model all --dataset all --n-trials 50
 """
 
@@ -56,8 +35,6 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from baselines import TinyHAR, TinierHAR, DeepConvLSTM
 
 
-# ============== Model Registry ==============
-
 MODEL_REGISTRY = {
     'tinyhar': {
         'name': 'TinyHAR',
@@ -76,8 +53,6 @@ MODEL_REGISTRY = {
     },
 }
 
-
-# ============== Dataset Configurations ==============
 
 DATASET_CONFIGS = {
     'ucihar': {
@@ -159,18 +134,7 @@ def getDevice() -> torch.device:
 
 
 def loadDataset(datasetName: str, batchSize: int):
-    """
-    Load dataset with train/val splits.
-    
-    Uses local data loaders from LightDeepConvLSTM/data with:
-    - Signal Rescue filters for PAMAP2, Skoda, Daphnet
-    - Class weights for imbalanced datasets
-    - OLD stratified shuffle split for Skoda (paper reproducibility)
-    """
-    import sys
-    from pathlib import Path
-    
-    # Add local data folder to path (self-contained for LightDeepConvLSTM paper)
+    """Load train/test data loaders and optional class weights."""
     dataPath = Path(__file__).parent.parent / 'data'
     if str(dataPath) not in sys.path:
         sys.path.insert(0, str(dataPath))
@@ -209,7 +173,6 @@ def loadDataset(datasetName: str, batchSize: int):
             root='./datasets/UniMiB-SHAR', batchSize=batchSize, numWorkers=0
         )
     elif dsName == 'skoda':
-        # Uses OLD stratified shuffle split for LightDeepConvLSTM paper reproducibility
         from skoda import getSkodaLoaders
         trainLoader, testLoader, classWeights = getSkodaLoaders(
             root='./datasets/Skoda', batchSize=batchSize, numWorkers=0, returnWeights=True
@@ -232,19 +195,7 @@ def createModel(
     seqLen: int,
     dropout: float = 0.3,
 ) -> nn.Module:
-    """
-    Create a baseline model instance.
-    
-    Args:
-        modelName: One of 'tinyhar', 'tinierhar', 'deepconvlstm'
-        numClasses: Number of output classes
-        inChannels: Number of input channels
-        seqLen: Sequence length
-        dropout: Dropout rate
-        
-    Returns:
-        Model instance
-    """
+    """Create a baseline model instance."""
     modelName = modelName.lower()
     
     if modelName == 'tinyhar':
@@ -364,16 +315,7 @@ def objective(
     epochs: int = 50,
     patience: int = 5,
 ) -> float:
-    """
-    Optuna objective function for HPO.
-    
-    Tunes training hyperparameters:
-    - learning_rate
-    - weight_decay
-    - dropout
-    
-    Returns F1 score (to be maximized).
-    """
+    """Optuna objective: tunes lr, weight_decay, dropout. Returns best F1."""
     # Sample hyperparameters
     lr = trial.suggest_float('learning_rate', 1e-4, 1e-2, log=True)
     weightDecay = trial.suggest_float('weight_decay', 1e-5, 0.05, log=True)
@@ -447,22 +389,7 @@ def runHPO(
     saveDir: str = './hpo_results',
     verbose: bool = True,
 ) -> dict:
-    """
-    Run Hyperparameter Optimization for a baseline model on a specific dataset.
-    
-    Args:
-        modelName: Name of the model ('tinyhar', 'tinierhar', 'deepconvlstm')
-        datasetName: Name of the dataset
-        nTrials: Number of HPO trials
-        epochs: Epochs per trial
-        patience: Early stopping patience per trial
-        seed: Random seed for reproducibility
-        saveDir: Directory to save results
-        verbose: Whether to print progress
-        
-    Returns:
-        Dictionary containing HPO results
-    """
+    """Run HPO for a baseline model on a specific dataset. Returns results dict."""
     setSeed(seed)
     device = getDevice()
     
@@ -528,16 +455,16 @@ def runHPO(
     os.makedirs(saveDir, exist_ok=True)
     results = {
         'model': modelName,
-        'model_name': modelInfo['name'],
-        'model_params': modelInfo['params'],
+        'modelName': modelInfo['name'],
+        'modelParams': modelInfo['params'],
         'dataset': datasetName,
-        'dataset_name': config['name'],
-        'best_f1': bestTrial.value,
-        'best_params': bestTrial.params,
-        'n_trials': nTrials,
-        'completed_trials': len(study.trials),
-        'pruned_trials': len([t for t in study.trials if t.state == optuna.trial.TrialState.PRUNED]),
-        'elapsed_time_minutes': elapsedTime / 60,
+        'datasetName': config['name'],
+        'bestF1': bestTrial.value,
+        'bestParams': bestTrial.params,
+        'nTrials': nTrials,
+        'completedTrials': len(study.trials),
+        'prunedTrials': len([t for t in study.trials if t.state == optuna.trial.TrialState.PRUNED]),
+        'elapsedTimeMinutes': elapsedTime / 60,
         'timestamp': datetime.now().isoformat(),
         'seed': seed,
     }
@@ -563,17 +490,7 @@ def runAllHPO(
     saveDir: str = './hpo_results',
     verbose: bool = True,
 ) -> list:
-    """
-    Run HPO for multiple models and/or datasets.
-    
-    Args:
-        modelName: Model name or 'all' for all models
-        datasetName: Dataset name or 'all' for all datasets
-        Other args: Same as runHPO
-        
-    Returns:
-        List of result dictionaries
-    """
+    """Run HPO for multiple models/datasets. Returns list of results."""
     models = list(MODEL_REGISTRY.keys()) if modelName.lower() == 'all' else [modelName.lower()]
     datasets = list(DATASET_CONFIGS.keys()) if datasetName.lower() == 'all' else [datasetName.lower()]
     
@@ -619,7 +536,7 @@ def runAllHPO(
         print('-' * 45)
         for r in allResults:
             if 'error' not in r:
-                print(f"{r['model']:<15} {r['dataset']:<15} {r['best_f1']:>10.4f}")
+                print(f"{r['model']:<15} {r['dataset']:<15} {r['bestF1']:>10.4f}")
             else:
                 print(f"{r['model']:<15} {r['dataset']:<15} {'ERROR':>10}")
     

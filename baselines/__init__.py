@@ -1,6 +1,6 @@
-# Baselines Package for MicroBiConvLSTM Research Paper
-# Re-implementations of comparison models for fair benchmarking
-# Note: Excludes Mamba-based models (HARMamba) - only RNN/CNN baselines
+# Baselines package for the MicroBiConvLSTM research paper.
+# Contains re-implementations of comparison models for fair benchmarking.
+# Excludes Mamba-based models. Only RNN/CNN baselines are included.
 
 from .tinyHar import TinyHAR
 from .deepConvLstm import DeepConvLSTM
