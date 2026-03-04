@@ -1,0 +1,32 @@
+{
+  "model": "tinierhar",
+  "dataset": "wisdm",
+  "bestAccuracy": 80.02414001207,
+  "bestTrainingParams": {
+    "lr": 0.0010154686465695059,
+    "weightDecay": 0.0003044772270978036,
+    "labelSmoothing": 0.15704048005042548,
+    "batchSize": 32,
+    "dropout": 0.024513970009553965
+  },
+  "lockedArchitecture": {
+    "nbFilters": 8,
+    "nbConvBlocks": 4,
+    "gruUnits": 16,
+    "dropout": 0.5
+  },
+  "bestParams": {
+    "lr": 0.0010154686465695059,
+    "weightDecay": 0.0003044772270978036,
+    "labelSmoothing": 0.15704048005042548,
+    "batchSize": 32,
+    "dropout": 0.5,
+    "nbFilters": 8,
+    "nbConvBlocks": 4,
+    "gruUnits": 16
+  },
+  "parameters": 7715,
+  "macs": 401984,
+  "nTrials": 50,
+  "timestamp": "2025-12-19T13:11:49.865019"
+}

@@ -1,0 +1,38 @@
+{
+  "model": "deepconvlstm",
+  "dataset": "daphnet",
+  "bestF1": 50.329399116582586,
+  "bestTrainingParams": {
+    "lr": 0.00031889544499383803,
+    "dropout": 0.19565319640112935
+  },
+  "signalRescue": {
+    "labelSmoothing": 0.0,
+    "batchSize": 512,
+    "weightDecay": 0.05
+  },
+  "lockedArchitecture": {
+    "convFilters": 64,
+    "lstmHidden": 64,
+    "lstmLayers": 2,
+    "bidirectional": false,
+    "dropout": 0.5
+  },
+  "bestParams": {
+    "lr": 0.00031889544499383803,
+    "dropout": 0.5,
+    "convFilters": 64,
+    "lstmHidden": 64,
+    "lstmLayers": 2,
+    "bidirectional": false,
+    "labelSmoothing": 0.0,
+    "batchSize": 512,
+    "weightDecay": 0.05
+  },
+  "parameters": 131778,
+  "macs": 8507520,
+  "nTrials": 50,
+  "nEpochs": 10,
+  "optimizationMetric": "F1",
+  "timestamp": "2026-01-10T03:55:52.777877"
+}

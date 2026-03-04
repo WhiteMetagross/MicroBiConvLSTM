@@ -1,0 +1,306 @@
+{
+  "ucihar": {
+    "model": "deepconvlstm",
+    "dataset": "ucihar",
+    "bestF1": 94.50205573144332,
+    "bestTrainingParams": {
+      "lr": 0.0019180825658221773,
+      "dropout": 0.30539376794780004
+    },
+    "signalRescue": {
+      "labelSmoothing": 0.1,
+      "batchSize": 64,
+      "weightDecay": 0.01
+    },
+    "lockedArchitecture": {
+      "convFilters": 64,
+      "lstmHidden": 64,
+      "lstmLayers": 2,
+      "bidirectional": false,
+      "dropout": 0.5
+    },
+    "bestParams": {
+      "lr": 0.0019180825658221773,
+      "dropout": 0.5,
+      "convFilters": 64,
+      "lstmHidden": 64,
+      "lstmLayers": 2,
+      "bidirectional": false,
+      "labelSmoothing": 0.1,
+      "batchSize": 64,
+      "weightDecay": 0.01
+    },
+    "parameters": 132038,
+    "macs": 17015168,
+    "nTrials": 50,
+    "nEpochs": 10,
+    "optimizationMetric": "F1",
+    "timestamp": "2026-01-10T02:30:08.660663"
+  },
+  "motionsense": {
+    "model": "deepconvlstm",
+    "dataset": "motionsense",
+    "bestF1": 34.010456439815044,
+    "bestTrainingParams": {
+      "lr": 0.0036891734957986044,
+      "dropout": 0.25340307727136907
+    },
+    "signalRescue": {
+      "labelSmoothing": 0.1,
+      "batchSize": 64,
+      "weightDecay": 0.01
+    },
+    "lockedArchitecture": {
+      "convFilters": 64,
+      "lstmHidden": 64,
+      "lstmLayers": 2,
+      "bidirectional": false,
+      "dropout": 0.5
+    },
+    "bestParams": {
+      "lr": 0.0036891734957986044,
+      "dropout": 0.5,
+      "convFilters": 64,
+      "lstmHidden": 64,
+      "lstmLayers": 2,
+      "bidirectional": false,
+      "labelSmoothing": 0.1,
+      "batchSize": 64,
+      "weightDecay": 0.01
+    },
+    "parameters": 131078,
+    "macs": 16892288,
+    "nTrials": 50,
+    "nEpochs": 10,
+    "optimizationMetric": "F1",
+    "timestamp": "2026-01-10T02:37:00.831594"
+  },
+  "wisdm": {
+    "model": "deepconvlstm",
+    "dataset": "wisdm",
+    "bestF1": 72.97228828564513,
+    "bestTrainingParams": {
+      "lr": 0.0011525599308775199,
+      "dropout": 0.4740895086687639
+    },
+    "signalRescue": {
+      "labelSmoothing": 0.1,
+      "batchSize": 64,
+      "weightDecay": 0.01
+    },
+    "lockedArchitecture": {
+      "convFilters": 64,
+      "lstmHidden": 64,
+      "lstmLayers": 2,
+      "bidirectional": false,
+      "dropout": 0.5
+    },
+    "bestParams": {
+      "lr": 0.0011525599308775199,
+      "dropout": 0.5,
+      "convFilters": 64,
+      "lstmHidden": 64,
+      "lstmLayers": 2,
+      "bidirectional": false,
+      "labelSmoothing": 0.1,
+      "batchSize": 64,
+      "weightDecay": 0.01
+    },
+    "parameters": 130118,
+    "macs": 16769408,
+    "nTrials": 50,
+    "nEpochs": 10,
+    "optimizationMetric": "F1",
+    "timestamp": "2026-01-10T02:44:52.691108"
+  },
+  "pamap2": {
+    "model": "deepconvlstm",
+    "dataset": "pamap2",
+    "bestF1": 72.3245016128829,
+    "bestTrainingParams": {
+      "lr": 0.0012400588244735513,
+      "dropout": 0.39045767531586073
+    },
+    "signalRescue": {
+      "labelSmoothing": 0.0,
+      "batchSize": 64,
+      "weightDecay": 0.01
+    },
+    "lockedArchitecture": {
+      "convFilters": 64,
+      "lstmHidden": 64,
+      "lstmLayers": 2,
+      "bidirectional": false,
+      "dropout": 0.5
+    },
+    "bestParams": {
+      "lr": 0.0012400588244735513,
+      "dropout": 0.5,
+      "convFilters": 64,
+      "lstmHidden": 64,
+      "lstmLayers": 2,
+      "bidirectional": false,
+      "labelSmoothing": 0.0,
+      "batchSize": 64,
+      "weightDecay": 0.01
+    },
+    "parameters": 135628,
+    "macs": 17425152,
+    "nTrials": 50,
+    "nEpochs": 10,
+    "optimizationMetric": "F1",
+    "timestamp": "2026-01-10T03:25:05.182365"
+  },
+  "opportunity": {
+    "model": "deepconvlstm",
+    "dataset": "opportunity",
+    "bestF1": 81.597980125764,
+    "bestTrainingParams": {
+      "lr": 0.0037745719414101707,
+      "dropout": 0.4130974779365947
+    },
+    "signalRescue": {
+      "labelSmoothing": 0.1,
+      "batchSize": 64,
+      "weightDecay": 0.01
+    },
+    "lockedArchitecture": {
+      "convFilters": 64,
+      "lstmHidden": 64,
+      "lstmLayers": 2,
+      "bidirectional": false,
+      "dropout": 0.5
+    },
+    "bestParams": {
+      "lr": 0.0037745719414101707,
+      "dropout": 0.5,
+      "convFilters": 64,
+      "lstmHidden": 64,
+      "lstmLayers": 2,
+      "bidirectional": false,
+      "labelSmoothing": 0.1,
+      "batchSize": 64,
+      "weightDecay": 0.01
+    },
+    "parameters": 154373,
+    "macs": 19882304,
+    "nTrials": 50,
+    "nEpochs": 10,
+    "optimizationMetric": "F1",
+    "timestamp": "2026-01-10T03:43:21.842941"
+  },
+  "unimib": {
+    "model": "deepconvlstm",
+    "dataset": "unimib",
+    "bestF1": 64.12819956131389,
+    "bestTrainingParams": {
+      "lr": 0.0026596401756527285,
+      "dropout": 0.28309093204725017
+    },
+    "signalRescue": {
+      "labelSmoothing": 0.1,
+      "batchSize": 64,
+      "weightDecay": 0.01
+    },
+    "lockedArchitecture": {
+      "convFilters": 64,
+      "lstmHidden": 64,
+      "lstmLayers": 2,
+      "bidirectional": false,
+      "dropout": 0.5
+    },
+    "bestParams": {
+      "lr": 0.0026596401756527285,
+      "dropout": 0.5,
+      "convFilters": 64,
+      "lstmHidden": 64,
+      "lstmLayers": 2,
+      "bidirectional": false,
+      "labelSmoothing": 0.1,
+      "batchSize": 64,
+      "weightDecay": 0.01
+    },
+    "parameters": 130313,
+    "macs": 16769600,
+    "nTrials": 50,
+    "nEpochs": 10,
+    "optimizationMetric": "F1",
+    "timestamp": "2026-01-10T03:48:04.138407"
+  },
+  "skoda": {
+    "model": "deepconvlstm",
+    "dataset": "skoda",
+    "bestF1": 74.94858296186533,
+    "bestTrainingParams": {
+      "lr": 0.00744593193618718,
+      "dropout": 0.09779599156712206
+    },
+    "signalRescue": {
+      "labelSmoothing": 0.1,
+      "batchSize": 512,
+      "weightDecay": 0.01
+    },
+    "lockedArchitecture": {
+      "convFilters": 64,
+      "lstmHidden": 64,
+      "lstmLayers": 2,
+      "bidirectional": false,
+      "dropout": 0.5
+    },
+    "bestParams": {
+      "lr": 0.00744593193618718,
+      "dropout": 0.5,
+      "convFilters": 64,
+      "lstmHidden": 64,
+      "lstmLayers": 2,
+      "bidirectional": false,
+      "labelSmoothing": 0.1,
+      "batchSize": 512,
+      "weightDecay": 0.01
+    },
+    "parameters": 139083,
+    "macs": 13686208,
+    "nTrials": 50,
+    "nEpochs": 10,
+    "optimizationMetric": "F1",
+    "timestamp": "2026-01-10T03:52:17.948287"
+  },
+  "daphnet": {
+    "model": "deepconvlstm",
+    "dataset": "daphnet",
+    "bestF1": 50.329399116582586,
+    "bestTrainingParams": {
+      "lr": 0.00031889544499383803,
+      "dropout": 0.19565319640112935
+    },
+    "signalRescue": {
+      "labelSmoothing": 0.0,
+      "batchSize": 512,
+      "weightDecay": 0.05
+    },
+    "lockedArchitecture": {
+      "convFilters": 64,
+      "lstmHidden": 64,
+      "lstmLayers": 2,
+      "bidirectional": false,
+      "dropout": 0.5
+    },
+    "bestParams": {
+      "lr": 0.00031889544499383803,
+      "dropout": 0.5,
+      "convFilters": 64,
+      "lstmHidden": 64,
+      "lstmLayers": 2,
+      "bidirectional": false,
+      "labelSmoothing": 0.0,
+      "batchSize": 512,
+      "weightDecay": 0.05
+    },
+    "parameters": 131778,
+    "macs": 8507520,
+    "nTrials": 50,
+    "nEpochs": 10,
+    "optimizationMetric": "F1",
+    "timestamp": "2026-01-10T03:55:52.777877"
+  }
+}

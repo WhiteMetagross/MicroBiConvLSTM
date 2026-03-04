@@ -1,0 +1,32 @@
+{
+  "model": "tinyhar",
+  "dataset": "pamap2",
+  "bestAccuracy": 79.51525590551181,
+  "bestTrainingParams": {
+    "lr": 0.0025159592378084334,
+    "weightDecay": 0.008884132068291108,
+    "labelSmoothing": 0.08551034264246798,
+    "batchSize": 128,
+    "dropout": 0.340820892616155
+  },
+  "lockedArchitecture": {
+    "filterNum": 24,
+    "nbConvLayers": 4,
+    "filterSize": 5,
+    "dropout": 0.5
+  },
+  "bestParams": {
+    "lr": 0.0025159592378084334,
+    "weightDecay": 0.008884132068291108,
+    "labelSmoothing": 0.08551034264246798,
+    "batchSize": 128,
+    "dropout": 0.5,
+    "filterNum": 24,
+    "nbConvLayers": 4,
+    "filterSize": 5
+  },
+  "parameters": 54518,
+  "macs": 12013632,
+  "nTrials": 50,
+  "timestamp": "2025-12-22T19:28:34.865622"
+}

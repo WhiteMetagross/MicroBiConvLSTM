@@ -1,0 +1,36 @@
+{
+  "model": "tinierhar",
+  "dataset": "daphnet",
+  "bestF1": 64.06514872735286,
+  "bestTrainingParams": {
+    "lr": 0.005563794764478836,
+    "dropout": 0.19167794331308166
+  },
+  "signalRescue": {
+    "labelSmoothing": 0.0,
+    "batchSize": 512,
+    "weightDecay": 0.05
+  },
+  "lockedArchitecture": {
+    "nbFilters": 8,
+    "nbConvBlocks": 4,
+    "gruUnits": 16,
+    "dropout": 0.5
+  },
+  "bestParams": {
+    "lr": 0.005563794764478836,
+    "dropout": 0.5,
+    "nbFilters": 8,
+    "nbConvBlocks": 4,
+    "gruUnits": 16,
+    "labelSmoothing": 0.0,
+    "batchSize": 512,
+    "weightDecay": 0.05
+  },
+  "parameters": 16799,
+  "macs": 539264,
+  "nTrials": 50,
+  "nEpochs": 10,
+  "optimizationMetric": "F1",
+  "timestamp": "2026-01-04T19:52:45.607607"
+}

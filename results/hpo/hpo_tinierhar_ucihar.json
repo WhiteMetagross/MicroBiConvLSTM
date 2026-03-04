@@ -1,0 +1,36 @@
+{
+  "model": "tinierhar",
+  "dataset": "ucihar",
+  "bestF1": 59.06531690755883,
+  "bestTrainingParams": {
+    "lr": 0.00038844542013174906,
+    "dropout": 0.26529337780264706
+  },
+  "signalRescue": {
+    "labelSmoothing": 0.1,
+    "batchSize": 64,
+    "weightDecay": 0.01
+  },
+  "lockedArchitecture": {
+    "nbFilters": 8,
+    "nbConvBlocks": 4,
+    "gruUnits": 16,
+    "dropout": 0.5
+  },
+  "bestParams": {
+    "lr": 0.00038844542013174906,
+    "dropout": 0.5,
+    "nbFilters": 8,
+    "nbConvBlocks": 4,
+    "gruUnits": 16,
+    "labelSmoothing": 0.1,
+    "batchSize": 64,
+    "weightDecay": 0.01
+  },
+  "parameters": 16931,
+  "macs": 1078592,
+  "nTrials": 1,
+  "nEpochs": 2,
+  "optimizationMetric": "F1",
+  "timestamp": "2026-01-09T13:20:45.600840"
+}

@@ -1,0 +1,36 @@
+{
+  "model": "tinyhar",
+  "dataset": "skoda",
+  "bestF1": 86.26511977212883,
+  "bestTrainingParams": {
+    "lr": 0.009300190713051784,
+    "dropout": 0.0074316799490039
+  },
+  "signalRescue": {
+    "labelSmoothing": 0.1,
+    "batchSize": 512,
+    "weightDecay": 0.01
+  },
+  "lockedArchitecture": {
+    "filterNum": 24,
+    "nbConvLayers": 4,
+    "filterSize": 5,
+    "dropout": 0.5
+  },
+  "bestParams": {
+    "lr": 0.009300190713051784,
+    "dropout": 0.5,
+    "filterNum": 24,
+    "nbConvLayers": 4,
+    "filterSize": 5,
+    "labelSmoothing": 0.1,
+    "batchSize": 512,
+    "weightDecay": 0.01
+  },
+  "parameters": 67141,
+  "macs": 14315808,
+  "nTrials": 50,
+  "nEpochs": 10,
+  "optimizationMetric": "F1",
+  "timestamp": "2026-01-04T20:06:31.473843"
+}

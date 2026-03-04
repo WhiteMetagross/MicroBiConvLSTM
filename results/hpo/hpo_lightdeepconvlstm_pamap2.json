@@ -1,0 +1,34 @@
+{
+  "model": "lightdeepconvlstm",
+  "dataset": "pamap2",
+  "bestF1": 71.81704779944496,
+  "bestTrainingParams": {
+    "lr": 0.00078078217248673,
+    "dropout": 0.2173225527878461
+  },
+  "signalRescue": {
+    "labelSmoothing": 0.0,
+    "batchSize": 64,
+    "weightDecay": 0.01
+  },
+  "lockedArchitecture": {
+    "convFilters": 16,
+    "lstmHidden": 32,
+    "dropout": 0.5
+  },
+  "bestParams": {
+    "lr": 0.00078078217248673,
+    "dropout": 0.5,
+    "convFilters": 16,
+    "lstmHidden": 32,
+    "labelSmoothing": 0.0,
+    "batchSize": 64,
+    "weightDecay": 0.01
+  },
+  "parameters": 16476,
+  "macs": 715520,
+  "nTrials": 50,
+  "nEpochs": 10,
+  "optimizationMetric": "F1",
+  "timestamp": "2026-01-04T21:11:27.813420"
+}

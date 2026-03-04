@@ -1,0 +1,32 @@
+{
+  "model": "tinierhar",
+  "dataset": "opportunity",
+  "bestAccuracy": 81.28718226068145,
+  "bestTrainingParams": {
+    "lr": 0.002939186253275058,
+    "weightDecay": 4.812704748163649e-05,
+    "labelSmoothing": 0.07031242808347297,
+    "batchSize": 32,
+    "dropout": 0.23463345524111956
+  },
+  "lockedArchitecture": {
+    "nbFilters": 8,
+    "nbConvBlocks": 4,
+    "gruUnits": 16,
+    "dropout": 0.5
+  },
+  "bestParams": {
+    "lr": 0.002939186253275058,
+    "weightDecay": 4.812704748163649e-05,
+    "labelSmoothing": 0.07031242808347297,
+    "batchSize": 32,
+    "dropout": 0.5,
+    "nbFilters": 8,
+    "nbConvBlocks": 4,
+    "gruUnits": 16
+  },
+  "parameters": 124418,
+  "macs": 8972320,
+  "nTrials": 50,
+  "timestamp": "2025-12-23T14:00:44.416024"
+}

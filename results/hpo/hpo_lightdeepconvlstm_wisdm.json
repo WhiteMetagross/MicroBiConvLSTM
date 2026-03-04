@@ -1,0 +1,30 @@
+{
+  "model": "lightdeepconvlstm",
+  "dataset": "wisdm",
+  "bestAccuracy": 76.0108630054315,
+  "bestTrainingParams": {
+    "lr": 0.008347866841564668,
+    "weightDecay": 0.00433332806419281,
+    "labelSmoothing": 0.14375521664488694,
+    "batchSize": 64,
+    "dropout": 0.3884872903027901
+  },
+  "lockedArchitecture": {
+    "convFilters": 16,
+    "lstmHidden": 32,
+    "dropout": 0.5
+  },
+  "bestParams": {
+    "lr": 0.008347866841564668,
+    "weightDecay": 0.00433332806419281,
+    "labelSmoothing": 0.14375521664488694,
+    "batchSize": 64,
+    "dropout": 0.5,
+    "convFilters": 16,
+    "lstmHidden": 32
+  },
+  "parameters": 14806,
+  "macs": 551296,
+  "nTrials": 50,
+  "timestamp": "2025-12-19T14:33:04.155276"
+}

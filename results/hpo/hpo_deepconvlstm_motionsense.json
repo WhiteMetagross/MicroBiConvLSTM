@@ -1,0 +1,38 @@
+{
+  "model": "deepconvlstm",
+  "dataset": "motionsense",
+  "bestF1": 34.010456439815044,
+  "bestTrainingParams": {
+    "lr": 0.0036891734957986044,
+    "dropout": 0.25340307727136907
+  },
+  "signalRescue": {
+    "labelSmoothing": 0.1,
+    "batchSize": 64,
+    "weightDecay": 0.01
+  },
+  "lockedArchitecture": {
+    "convFilters": 64,
+    "lstmHidden": 64,
+    "lstmLayers": 2,
+    "bidirectional": false,
+    "dropout": 0.5
+  },
+  "bestParams": {
+    "lr": 0.0036891734957986044,
+    "dropout": 0.5,
+    "convFilters": 64,
+    "lstmHidden": 64,
+    "lstmLayers": 2,
+    "bidirectional": false,
+    "labelSmoothing": 0.1,
+    "batchSize": 64,
+    "weightDecay": 0.01
+  },
+  "parameters": 131078,
+  "macs": 16892288,
+  "nTrials": 50,
+  "nEpochs": 10,
+  "optimizationMetric": "F1",
+  "timestamp": "2026-01-10T02:37:00.831594"
+}

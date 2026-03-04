@@ -1,0 +1,34 @@
+{
+  "model": "lightdeepconvlstm",
+  "dataset": "skoda",
+  "bestF1": 70.05510500674897,
+  "bestTrainingParams": {
+    "lr": 0.0053757739364817935,
+    "dropout": 0.18121319423871668
+  },
+  "signalRescue": {
+    "labelSmoothing": 0.1,
+    "batchSize": 512,
+    "weightDecay": 0.01
+  },
+  "lockedArchitecture": {
+    "convFilters": 16,
+    "lstmHidden": 32,
+    "dropout": 0.5
+  },
+  "bestParams": {
+    "lr": 0.0053757739364817935,
+    "dropout": 0.5,
+    "convFilters": 16,
+    "lstmHidden": 32,
+    "labelSmoothing": 0.1,
+    "batchSize": 512,
+    "weightDecay": 0.01
+  },
+  "parameters": 17291,
+  "macs": 627520,
+  "nTrials": 50,
+  "nEpochs": 10,
+  "optimizationMetric": "F1",
+  "timestamp": "2026-01-04T20:42:20.113627"
+}

@@ -1,0 +1,38 @@
+{
+  "model": "deepconvlstm",
+  "dataset": "unimib",
+  "bestF1": 64.12819956131389,
+  "bestTrainingParams": {
+    "lr": 0.0026596401756527285,
+    "dropout": 0.28309093204725017
+  },
+  "signalRescue": {
+    "labelSmoothing": 0.1,
+    "batchSize": 64,
+    "weightDecay": 0.01
+  },
+  "lockedArchitecture": {
+    "convFilters": 64,
+    "lstmHidden": 64,
+    "lstmLayers": 2,
+    "bidirectional": false,
+    "dropout": 0.5
+  },
+  "bestParams": {
+    "lr": 0.0026596401756527285,
+    "dropout": 0.5,
+    "convFilters": 64,
+    "lstmHidden": 64,
+    "lstmLayers": 2,
+    "bidirectional": false,
+    "labelSmoothing": 0.1,
+    "batchSize": 64,
+    "weightDecay": 0.01
+  },
+  "parameters": 130313,
+  "macs": 16769600,
+  "nTrials": 50,
+  "nEpochs": 10,
+  "optimizationMetric": "F1",
+  "timestamp": "2026-01-10T03:48:04.138407"
+}

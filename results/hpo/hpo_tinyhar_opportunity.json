@@ -1,0 +1,32 @@
+{
+  "model": "tinyhar",
+  "dataset": "opportunity",
+  "bestAccuracy": 83.61276365603028,
+  "bestTrainingParams": {
+    "lr": 0.0027294452512578297,
+    "weightDecay": 0.00014766222835118172,
+    "labelSmoothing": 0.03975477444006861,
+    "batchSize": 32,
+    "dropout": 0.2724992869653602
+  },
+  "lockedArchitecture": {
+    "filterNum": 24,
+    "nbConvLayers": 4,
+    "filterSize": 5,
+    "dropout": 0.5
+  },
+  "bestParams": {
+    "lr": 0.0027294452512578297,
+    "weightDecay": 0.00014766222835118172,
+    "labelSmoothing": 0.03975477444006861,
+    "batchSize": 32,
+    "dropout": 0.5,
+    "filterNum": 24,
+    "nbConvLayers": 4,
+    "filterSize": 5
+  },
+  "parameters": 123295,
+  "macs": 47771376,
+  "nTrials": 50,
+  "timestamp": "2025-12-23T13:36:17.823851"
+}

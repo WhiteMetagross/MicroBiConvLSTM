@@ -1,0 +1,30 @@
+{
+  "model": "lightdeepconvlstm",
+  "dataset": "opportunity",
+  "bestAccuracy": 79.39426717144403,
+  "bestTrainingParams": {
+    "lr": 0.0014917975657243398,
+    "weightDecay": 0.0001716034213502058,
+    "labelSmoothing": 0.05633703822166948,
+    "batchSize": 32,
+    "dropout": 0.19084369901963683
+  },
+  "lockedArchitecture": {
+    "convFilters": 16,
+    "lstmHidden": 32,
+    "dropout": 0.5
+  },
+  "bestParams": {
+    "lr": 0.0014917975657243398,
+    "weightDecay": 0.0001716034213502058,
+    "labelSmoothing": 0.05633703822166948,
+    "batchSize": 32,
+    "dropout": 0.5,
+    "convFilters": 16,
+    "lstmHidden": 32
+  },
+  "parameters": 20821,
+  "macs": 1329472,
+  "nTrials": 50,
+  "timestamp": "2025-12-23T14:16:58.074462"
+}

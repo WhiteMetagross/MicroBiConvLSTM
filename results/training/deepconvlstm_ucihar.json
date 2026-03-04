@@ -1,0 +1,116 @@
+{
+  "model": "deepconvlstm",
+  "dataset": "ucihar",
+  "nSeeds": 1,
+  "seeds": [
+    74096.0
+  ],
+  "meanAccuracy": 60.50220727920532,
+  "stdAccuracy": 0.0,
+  "meanF1": 54.97659891594092,
+  "stdF1": 0.0,
+  "meanPrecision": 60.85550745332186,
+  "stdPrecision": 0.0,
+  "meanRecall": 59.43119501280311,
+  "stdRecall": 0.0,
+  "parameters": 140442,
+  "macs": 18138272,
+  "sizeMb": 0.5368881225585938,
+  "latencyMs": 1.0424500005319715,
+  "throughput": 959.2786219863697,
+  "results": [
+    {
+      "modelName": "deepconvlstm",
+      "dataset": "ucihar",
+      "seed": 74096.0,
+      "bestAccuracy": 60.50220727920532,
+      "bestF1": 54.97659891594092,
+      "bestPrecision": 60.85550745332186,
+      "bestRecall": 59.43119501280311,
+      "finalAccuracy": 60.50220727920532,
+      "parameters": 140442,
+      "macs": 18138272,
+      "sizeMb": 0.5368881225585938,
+      "latencyMs": 1.0424500005319715,
+      "throughput": 959.2786219863697,
+      "epochsTrained": 2,
+      "totalEpochs": 2,
+      "trainTime": 24.11385464668274,
+      "earlyStopped": false,
+      "confusionMatrix": [
+        [
+          125,
+          18,
+          156,
+          26,
+          171,
+          0
+        ],
+        [
+          101,
+          28,
+          251,
+          13,
+          77,
+          1
+        ],
+        [
+          53,
+          11,
+          306,
+          4,
+          46,
+          0
+        ],
+        [
+          2,
+          0,
+          0,
+          296,
+          193,
+          0
+        ],
+        [
+          0,
+          0,
+          2,
+          36,
+          494,
+          0
+        ],
+        [
+          2,
+          0,
+          1,
+          0,
+          0,
+          534
+        ]
+      ],
+      "epochMetrics": [
+        {
+          "epoch": 1,
+          "trainLoss": 1.7578193304831522,
+          "trainAcc": 29.468201754385966,
+          "valLoss": 1.6934205076433175,
+          "valAcc": 45.503902435302734,
+          "valF1": 37.285523885723684,
+          "valPrecision": 61.002998766921955,
+          "valRecall": 43.59537147017724,
+          "lr": 7.768908402634982e-05
+        },
+        {
+          "epoch": 2,
+          "trainLoss": 1.4837378577182168,
+          "trainAcc": 52.124451754385966,
+          "valLoss": 1.2674017915250004,
+          "valAcc": 60.50220727920532,
+          "valF1": 54.97659891594092,
+          "valPrecision": 60.85550745332186,
+          "valRecall": 59.43119501280311,
+          "lr": 0.00011653362603952471
+        }
+      ]
+    }
+  ]
+}
