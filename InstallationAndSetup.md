@@ -1,4 +1,4 @@
-# Installation and Setup Guide.
+# Installation and Setup Guide:
 
 **Author:** Mridankan Mandal
 
@@ -8,29 +8,30 @@ This document provides step-by-step instructions for setting up the MicroBiConvL
 
 ---
 
-## Table of Contents.
+## Table of Contents:
 
-1. [System Requirements](#system-requirements)
-2. [Python Installation](#python-installation)
-3. [Virtual Environment Setup](#virtual-environment-setup)
-4. [Installing Dependencies](#installing-dependencies)
-5. [CUDA and GPU Setup](#cuda-and-gpu-setup)
-6. [Dataset Download and Organization](#dataset-download-and-organization)
-7. [Verifying the Installation](#verifying-the-installation)
-8. [Troubleshooting](#troubleshooting)
+1. [System Requirements](#system-requirements).
+2. [Python Installation](#python-installation).
+3. [Virtual Environment Setup](#virtual-environment-setup).
+4. [Installing Dependencies](#installing-dependencies).
+5. [CUDA and GPU Setup](#cuda-and-gpu-setup).
+6. [Dataset Download and Organization](#dataset-download-and-organization).
+7. [Verifying the Installation](#verifying-the-installation).
+8. [Edge Deployment Tooling](#edge-deployment-tooling).
+9. [Troubleshooting](#troubleshooting).
 
 ---
 
-## System Requirements.
+## System Requirements:
 
-### Minimum Requirements.
+### Minimum Requirements:
 
 - **Operating System:** Windows 10/11, Ubuntu 18.04+, or macOS 10.15+.
 - **Python:** 3.8 or higher.
 - **RAM:** 8 GB minimum.
 - **Disk Space:** 2 GB for dependencies and datasets.
 
-### Recommended Requirements.
+### Recommended Requirements:
 
 - **Python:** 3.10 or 3.11 for best compatibility with PyTorch.
 - **RAM:** 16 GB or higher.
@@ -41,9 +42,9 @@ This document provides step-by-step instructions for setting up the MicroBiConvL
 
 ---
 
-## Python Installation.
+## Python Installation:
 
-### Windows.
+### Windows:
 
 1. Download Python from https://www.python.org/downloads/.
 2. During installation, check the box labeled "Add Python to PATH".
@@ -53,7 +54,7 @@ This document provides step-by-step instructions for setting up the MicroBiConvL
 python --version
 ```
 
-### Linux.
+### Linux:
 
 Most Linux distributions include Python. If not, install it using the package manager.
 
@@ -62,7 +63,7 @@ sudo apt update
 sudo apt install python3 python3-pip python3-venv
 ```
 
-### macOS.
+### macOS:
 
 Install Python using Homebrew.
 
@@ -72,11 +73,11 @@ brew install python
 
 ---
 
-## Virtual Environment Setup.
+## Virtual Environment Setup:
 
 A virtual environment is strongly recommended to isolate this project from system-wide Python packages.
 
-### Using venv (Standard Library).
+### Using venv (Standard Library):
 
 ```bash
 # Create a virtual environment.
@@ -90,7 +91,7 @@ microbiconv_env\Scripts\activate
 source microbiconv_env/bin/activate
 ```
 
-### Using Conda.
+### Using Conda:
 
 ```bash
 # Create a conda environment.
@@ -104,9 +105,9 @@ After activation, the terminal prompt will show the environment name. All subseq
 
 ---
 
-## Installing Dependencies.
+## Installing Dependencies:
 
-### Step 1: Install PyTorch.
+### Step 1: Install PyTorch:
 
 Install PyTorch first, selecting the appropriate command for your system from https://pytorch.org/get-started/locally/.
 
@@ -122,7 +123,7 @@ For CPU-only systems:
 pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
 ```
 
-### Step 2: Install Remaining Dependencies.
+### Step 2: Install Remaining Dependencies:
 
 ```bash
 pip install -r requirements.txt
@@ -146,9 +147,9 @@ This installs the following packages.
 
 ---
 
-## CUDA and GPU Setup.
+## CUDA and GPU Setup:
 
-### Check GPU Availability.
+### Check GPU Availability:
 
 After installing PyTorch, verify that CUDA is available.
 
@@ -163,7 +164,7 @@ CUDA available: True
 Device: NVIDIA GeForce RTX 4060 Laptop GPU
 ```
 
-### Installing CUDA Toolkit.
+### Installing CUDA Toolkit:
 
 If CUDA is not available but you have an NVIDIA GPU:
 
@@ -175,11 +176,11 @@ If CUDA is not available but you have an NVIDIA GPU:
 
 ---
 
-## Dataset Download and Organization.
+## Dataset Download and Organization:
 
 The datasets must be downloaded manually and placed in a `datasets/` folder at the repository root. Each dataset has its own subfolder.
 
-### Required Directory Structure.
+### Required Directory Structure:
 
 ```
 Micro-Bi-ConvLSTM/
@@ -216,7 +217,7 @@ Micro-Bi-ConvLSTM/
             |-- ...
 ```
 
-### Dataset Download Links.
+### Dataset Download Links:
 
 | # | Dataset | Download URL |
 |---|---------|-------------|
@@ -229,7 +230,7 @@ Micro-Bi-ConvLSTM/
 | 7 | Skoda | https://sensor.informatik.uni-mannheim.de/ |
 | 8 | Daphnet | https://archive.ics.uci.edu/ml/datasets/Daphnet+Freezing+of+Gait |
 
-### Dataset Summary.
+### Dataset Summary:
 
 | Dataset | Channels | Sequence Length | Classes | Train Samples | Test Samples |
 |---------|----------|----------------|---------|---------------|-------------|
@@ -246,17 +247,17 @@ Micro-Bi-ConvLSTM/
 
 ---
 
-## Verifying the Installation.
+## Verifying the Installation:
 
 Run the following checks to confirm that the installation is correct.
 
-### Step 1: Verify Python and Dependencies.
+### Step 1: Verify Python and Dependencies:
 
 ```bash
 python -c "import torch; import numpy; import pandas; import sklearn; import optuna; print('All core dependencies imported successfully.')"
 ```
 
-### Step 2: Verify Model Creation.
+### Step 2: Verify Model Creation:
 
 ```bash
 python -c "
@@ -277,7 +278,7 @@ Parameters: 10,454
 Model creation successful.
 ```
 
-### Step 3: Verify Baseline Creation.
+### Step 3: Verify Baseline Creation:
 
 ```bash
 python -c "
@@ -291,7 +292,7 @@ print('All baseline models created successfully.')
 "
 ```
 
-### Step 4: Verify Data Loading (Requires Dataset).
+### Step 4: Verify Data Loading (Requires Dataset):
 
 ```bash
 python -c "
@@ -306,15 +307,62 @@ This step requires that the UCI-HAR dataset has been downloaded and placed in th
 
 ---
 
-## Troubleshooting.
+## Edge Deployment Tooling:
 
-### PyTorch Not Detecting GPU.
+The paper deployment workflow uses extra tooling beyond the Python training stack.
+
+### Pico 2 Tooling:
+
+Install:
+
+- `arduino-cli`
+- Raspberry Pi Pico / RP2040 Arduino core.
+- `picotool`
+
+The deployment scripts discover these through environment variables when needed:
+
+- `ARDUINO_CLI`
+- `PICOTOOL`
+- `PICO_TOOL_PYTHON`
+- `UF2CONV`
+- `PYSERIAL_DIR`
+
+### ESP32 Tooling:
+
+Install:
+
+- ESP-IDF 5.x.
+- `idf.py`
+- an ESP32 serial driver.
+
+The native ESP32 scripts use:
+
+- `ESP_IDF_EXPORT_BAT`
+- `IDF_PYTHON_ENV_PATH`
+
+when the ESP-IDF environment is not already active in the shell.
+
+### WSL Bridge:
+
+If you use a Windows + WSL workflow for fixture generation, the deployment scripts also support:
+
+- `WSL_DISTRO`
+- `WSL_DEPLOY_PYTHON`
+- `WSL_MAMBAHAR_PYTHON`
+
+See [docs/EdgeDeployment.md](docs/EdgeDeployment.md) for the full retrain-export-deploy sequence.
+
+---
+
+## Troubleshooting:
+
+### PyTorch Not Detecting GPU:
 
 - Ensure the NVIDIA driver is up to date.
 - Verify the CUDA version with `nvidia-smi` and ensure the installed PyTorch build matches.
 - Reinstall PyTorch with the correct CUDA version from https://pytorch.org/get-started/locally/.
 
-### ModuleNotFoundError for Project Modules.
+### ModuleNotFoundError for Project Modules:
 
 If Python cannot find `models`, `baselines`, or `data` modules, ensure you are running scripts from the repository root directory.
 
@@ -335,7 +383,7 @@ On Windows (PowerShell):
 $env:PYTHONPATH = "$env:PYTHONPATH;C:\path\to\Micro-Bi-ConvLSTM"
 ```
 
-### Out-of-Memory Errors.
+### Out-of-Memory Errors:
 
 MicroBiConvLSTM is extremely lightweight and should not cause memory issues. If memory errors occur with baseline models or large batch sizes:
 
@@ -343,11 +391,11 @@ MicroBiConvLSTM is extremely lightweight and should not cause memory issues. If 
 - Disable AMP by setting `use_amp = False` in the training function.
 - Close other GPU-intensive applications.
 
-### Optuna Database Errors.
+### Optuna Database Errors:
 
 If HPO crashes with database errors, ensure the output directory exists and is writable. Optuna stores study data in-memory by default, so this should not normally occur.
 
-### Dataset Loading Failures.
+### Dataset Loading Failures:
 
 - Verify that the dataset folder names match the expected directory structure shown above.
 - Check that the files have been fully extracted (not still compressed).

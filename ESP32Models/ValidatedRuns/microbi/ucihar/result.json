@@ -1,0 +1,38 @@
+{
+  "model": "microbi",
+  "dataset": "ucihar",
+  "desktop_int8_parity_pct": 99.27561496257279,
+  "desktop_int8_tensor_bytes": 72318,
+  "model_bytes": 302232,
+  "parameter_count": 10454,
+  "success": true,
+  "tensor_arena_alloc_bytes": 172032,
+  "heap_total_internal_bytes_before_setup": 318728,
+  "heap_free_internal_bytes_before_setup": 303332,
+  "largest_internal_block_before_setup_bytes": 172032,
+  "avg_latency_us": 176984.906,
+  "heap_total_internal_bytes": 318728,
+  "heap_free_internal_bytes": 130680,
+  "heap_used_internal_bytes": 188048,
+  "largest_internal_block_bytes": 110592,
+  "tensor_arena_used_bytes": 109344,
+  "avg_parity_vs_pytorch_pct": 99.27562,
+  "avg_parity_vs_tflite_int8_pct": 100.0,
+  "avg_rmse_vs_pytorch": 0.03938,
+  "avg_max_abs_err_vs_pytorch": 0.077788,
+  "cosine_vs_pytorch": 0.999937057,
+  "predicted_class": {
+    "index": 4,
+    "label": "STANDING"
+  },
+  "expected_class": {
+    "index": 4,
+    "label": "STANDING"
+  },
+  "latency_min_us": 176876,
+  "latency_max_us": 177003,
+  "latency_std_us": 34.77412356079572,
+  "requested_arena_bytes": 172032,
+  "parity_drop_pct_points": -5.037427214915624e-06,
+  "top1_match_on_esp32": true
+}

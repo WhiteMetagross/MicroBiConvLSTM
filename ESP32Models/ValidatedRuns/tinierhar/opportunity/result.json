@@ -1,0 +1,18 @@
+{
+  "model": "tinierhar",
+  "dataset": "opportunity",
+  "desktop_int8_parity_pct": 95.20163703914754,
+  "desktop_int8_tensor_bytes": 1157658,
+  "model_bytes": 431696,
+  "parameter_count": 124418,
+  "firmware_flash_bytes": 773904,
+  "app_partition_bytes": 3538944,
+  "success": false,
+  "boot_app_partition_bytes": 3538944,
+  "tensor_arena_alloc_bytes": 180224,
+  "heap_total_internal_bytes_before_setup": 330560,
+  "heap_free_internal_bytes_before_setup": 320568,
+  "largest_internal_block_before_setup_bytes": 180224,
+  "failure_reason": "Failed to resize buffer. Requested: 202240, available 38536, missing: 163704",
+  "requested_arena_bytes": 180224
+}

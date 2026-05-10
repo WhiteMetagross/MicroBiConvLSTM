@@ -1,0 +1,41 @@
+{
+  "model": "tinierhar",
+  "dataset": "ucihar",
+  "desktop_int8_parity_pct": 90.18308882451926,
+  "desktop_int8_tensor_bytes": 163135,
+  "model_bytes": 324232,
+  "parameter_count": 16931,
+  "firmware_flash_bytes": 619856,
+  "app_partition_bytes": 3538944,
+  "success": true,
+  "boot_app_partition_bytes": 3538944,
+  "tensor_arena_alloc_bytes": 180224,
+  "heap_total_internal_bytes_before_setup": 330544,
+  "heap_free_internal_bytes_before_setup": 320552,
+  "largest_internal_block_before_setup_bytes": 180224,
+  "avg_latency_us": 209215.59375,
+  "heap_total_internal_bytes": 330544,
+  "heap_free_internal_bytes": 139688,
+  "heap_used_internal_bytes": 190856,
+  "largest_internal_block_bytes": 126976,
+  "tensor_arena_used_bytes": 164848,
+  "avg_parity_vs_pytorch_pct": 92.011673,
+  "avg_parity_vs_tflite_int8_pct": 97.850777,
+  "avg_rmse_vs_pytorch": 0.430155,
+  "avg_max_abs_err_vs_pytorch": 0.660721,
+  "cosine_vs_pytorch": 0.994524,
+  "predicted_class": {
+    "index": 4,
+    "label": "STANDING"
+  },
+  "expected_class": {
+    "index": 4,
+    "label": "STANDING"
+  },
+  "latency_min_us": 209130,
+  "latency_max_us": 209272,
+  "latency_std_us": 50.50537979690631,
+  "requested_arena_bytes": 180224,
+  "parity_drop_pct_points": -1.8285841754807421,
+  "top1_match_on_esp32": true
+}

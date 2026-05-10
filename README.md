@@ -1,4 +1,4 @@
-# MicroBiConvLSTM: An Ultra-Lightweight Bidirectional Convolutional LSTM for Human Activity Recognition.
+# MicroBiConvLSTM: An Ultra-Lightweight Bidirectional Convolutional LSTM for Human Activity Recognition:
 
 **Author:** Mridankan Mandal
 
@@ -6,13 +6,13 @@
 
 ---
 
-## Overview.
+## Overview:
 
 MicroBiConvLSTM is an ultra-lightweight convolutional LSTM architecture designed for efficient Human Activity Recognition (HAR) on edge devices. The model achieves competitive recognition accuracy while using only approximately 10,500 parameters and maintaining O(N) inference complexity. It is designed for deployment on resource-constrained platforms such as microcontrollers, wearables, and mobile devices.
 
 The architecture consists of a two-stage convolutional feature extractor followed by a single-layer bidirectional LSTM and a linear classification head. The convolutional stages apply temporal compression via max pooling, reducing the sequence length by 4x before the LSTM processes the features. This design allows the model to fit comfortably in as little as 21 KB of memory when quantized to INT8.
 
-This repository contains the complete source code, baseline implementations, training scripts, hyperparameter optimization (HPO) pipelines, ablation study runners, and benchmark results presented in the research paper.
+This repository contains the complete source code, baseline implementations, training scripts, hyperparameter optimization (HPO) pipelines, ablation study runners, converted deployment artifacts, and board-level benchmark results presented in the research paper. The repository was organised so that the research workflow could be followed from model training through to reproducible microcontroller deployment.
 
 ![MicroBiConvLSTM Architecture](docs/figures/MicroBiConvLSTM_Architecture.png)
 
@@ -20,7 +20,7 @@ This repository contains the complete source code, baseline implementations, tra
 
 ---
 
-## Key Features.
+## Key Features:
 
 - **Ultra-Lightweight:** Approximately 10,500 trainable parameters with a frozen architecture configuration.
 - **Linear Complexity:** O(N) time complexity with respect to sequence length.
@@ -29,9 +29,18 @@ This repository contains the complete source code, baseline implementations, tra
 - **Edge-Ready:** Fits in 21 KB (INT8) suitable for STM32, ESP32, and similar microcontrollers.
 - **No Attention Required:** Pure convolutional and recurrent architecture without attention mechanisms.
 
+## Repository Highlights:
+
+The repository should be read as a research package rather than as a model-only implementation.
+
+- The paper training protocol is reproduced through dedicated retraining entrypoints.
+- The full conversion path to ONNX, TFLite, and TFLite Micro is included.
+- Native deployment flows are provided for Raspberry Pi Pico 2 and ESP32 hardware.
+- Converted model bundles and board-facing result JSON files are committed for inspection and reuse.
+
 ---
 
-## Architecture Summary.
+## Architecture Summary:
 
 | Property | Value |
 |----------|-------|
@@ -48,7 +57,7 @@ This repository contains the complete source code, baseline implementations, tra
 
 ---
 
-## Comparison with Baselines.
+## Comparison with Baselines:
 
 The following table summarizes the model sizes and average F1 scores across eight HAR benchmark datasets.
 
@@ -65,7 +74,7 @@ The following table summarizes the model sizes and average F1 scores across eigh
 
 ---
 
-## Benchmark Datasets.
+## Benchmark Datasets:
 
 The model is evaluated on eight publicly available HAR benchmark datasets.
 
@@ -82,7 +91,7 @@ The model is evaluated on eight publicly available HAR benchmark datasets.
 
 ---
 
-## Ablation Studies.
+## Ablation Studies:
 
 Five architectural ablation variants are evaluated to demonstrate the contribution of each component.
 
@@ -106,7 +115,7 @@ Additional ablation studies include Pareto efficiency analysis, complexity scali
 
 ---
 
-## Efficiency Analysis.
+## Efficiency Analysis:
 
 ![Efficiency Heatmap](docs/figures/efficiency_heatmap.png)
 
@@ -126,7 +135,7 @@ Additional ablation studies include Pareto efficiency analysis, complexity scali
 
 ---
 
-## Repository Structure.
+## Repository Structure:
 
 ```
 Micro-Bi-ConvLSTM/
@@ -158,12 +167,25 @@ Micro-Bi-ConvLSTM/
 |   |-- __init__.py
 |   |-- trainMicroBiConvLstm.py
 |   |-- trainBaselines.py
+|   |-- runPaperRetraining.py
+|   |-- exportEdgeModels.py
+|   |-- convertPaperRetraining.py
+|   |-- generatePicoFixture.py
+|   |-- runPico2DeploymentSweep.py
+|   |-- runEsp32NativeDeploymentSweep.py
+|   |-- prepareEsp32Bundle.py
+|   |-- runSingleEsp32Bundle.py
 |   |-- hpoMicroBiConvLstm.py
 |   |-- hpoBaselines.py
 |   |-- ablationStudiesMicroBiConvLstm.py
 |   |-- benchmarkMemoryFootprint.py
 |   |-- create_paper_figures.py
 |   |-- visualize_sensor_waves.py
+|-- embedded/                    Embedded deployment runtimes.
+|   |-- pico2EdgeRuntime/        Generic Arduino Pico 2 TFLM runtime.
+|   |-- esp32NativeDeployment/   Native ESP-IDF ESP32 deployment project.
+|-- Pico2Models/                 Pico 2 ready model arrays and result JSON files.
+|-- ESP32Models/                 ESP32 ready INT8 bundles and validated run JSON files.
 |-- results/                     Experiment results and benchmarks.
 |   |-- TrainingResults.md
 |   |-- HPOResults.md
@@ -173,14 +195,18 @@ Micro-Bi-ConvLSTM/
 |   |   |-- MemoryFootprintResults.md
 |   |-- hpo/                     HPO result JSON files.
 |   |-- training/                Training result JSON files.
+|-- models/convertedPaperModels/ Committed exported model bundles from the paper retraining sweep.
 |-- docs/                        Architecture documentation and figures.
 |   |-- Architecture.md
+|   |-- EdgeDeployment.md
+|   |-- Pico2DeploymentResultsReport.md
+|   |-- ESP32DeploymentResultsReport.md
 |   |-- figures/                 Publication figures and diagrams.
 ```
 
 ---
 
-## Quick Start.
+## Quick Start:
 
 1. Install dependencies.
 
@@ -214,11 +240,35 @@ python scripts/hpoMicroBiConvLstm.py --dataset ucihar --n-trials 50
 python scripts/ablationStudiesMicroBiConvLstm.py --dataset ucihar --study arch --seeds 5
 ```
 
+7. Run paper-style seed-29 retraining.
+
+```bash
+python scripts/runPaperRetraining.py --models all --datasets all --seed-list 29 --epochs 200 --patience 10
+```
+
+8. Export a trained checkpoint to ONNX, TFLite, and TFLite Micro.
+
+```bash
+python scripts/exportEdgeModels.py --model microbi --dataset motionsense --checkpoint path/to/checkpoint.pt
+```
+
+9. See the deployment workflow and hardware reports.
+
+- [docs/EdgeDeployment.md](docs/EdgeDeployment.md).
+- [docs/Pico2DeploymentResultsReport.md](docs/Pico2DeploymentResultsReport.md).
+- [docs/ESP32DeploymentResultsReport.md](docs/ESP32DeploymentResultsReport.md).
+
+10. Inspect the committed deployment artifacts.
+
+- `models/convertedPaperModels/` for the generic exported model bundles.
+- `Pico2Models/` for the Pico 2 ready arrays and result JSON files.
+- `ESP32Models/` for the ESP32 ready INT8 bundles and validated run logs.
+
 For detailed instructions, see [Usage.md](Usage.md) and [InstallationAndSetup.md](InstallationAndSetup.md).
 
 ---
 
-## Citation.
+## Citation:
 
 If you use this code in your research, please cite the following paper.
 
@@ -233,6 +283,6 @@ If you use this code in your research, please cite the following paper.
 
 ---
 
-## License.
+## License:
 
 This project is released for academic and research purposes. Please refer to the repository license file for terms of use.

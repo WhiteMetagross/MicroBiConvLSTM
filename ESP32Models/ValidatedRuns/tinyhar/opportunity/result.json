@@ -1,0 +1,15 @@
+{
+  "model": "tinyhar",
+  "dataset": "opportunity",
+  "desktop_int8_parity_pct": 87.78229093240644,
+  "desktop_int8_tensor_bytes": 3161903,
+  "model_bytes": 300944,
+  "parameter_count": 123295,
+  "success": false,
+  "tensor_arena_alloc_bytes": 180224,
+  "heap_total_internal_bytes_before_setup": 318768,
+  "heap_free_internal_bytes_before_setup": 303372,
+  "largest_internal_block_before_setup_bytes": 172032,
+  "failure_reason": "=== ESP32 Native TFLite Micro HAR Runtime ===",
+  "requested_arena_bytes": 180224
+}
