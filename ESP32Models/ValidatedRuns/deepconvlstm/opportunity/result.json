@@ -1,0 +1,15 @@
+{
+  "model": "deepconvlstm",
+  "dataset": "opportunity",
+  "desktop_int8_parity_pct": 95.74195826671541,
+  "desktop_int8_tensor_bytes": 715974,
+  "model_bytes": 1985192,
+  "parameter_count": 154373,
+  "success": false,
+  "tensor_arena_alloc_bytes": 229376,
+  "heap_total_internal_bytes_before_setup": 318848,
+  "heap_free_internal_bytes_before_setup": 303452,
+  "largest_internal_block_before_setup_bytes": 172032,
+  "failure_reason": "=== ESP32 Native TFLite Micro HAR Runtime ===",
+  "requested_arena_bytes": 229376
+}

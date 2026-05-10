@@ -44,3 +44,15 @@ hpo_results/
 
 # Results (generated locally)
 results/
+edgeExports/
+picoDeployments/
+esp32Deployments/
+esp32Build/
+embedded/**/build/
+embedded/pico2EdgeRuntime/edge_model.h
+embedded/pico2EdgeRuntime/edge_model.cpp
+embedded/pico2EdgeRuntime/edge_fixture.h
+embedded/esp32NativeDeployment/main/edge_model_data.h
+embedded/esp32NativeDeployment/main/edge_model_data.cc
+embedded/esp32NativeDeployment/main/edge_fixture.h
+embedded/esp32NativeDeployment/main/edge_ops_config.h

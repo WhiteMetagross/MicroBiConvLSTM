@@ -1,9 +1,12 @@
-"""Baseline Training Script for MicroBiConvLSTM Research Paper.
+"""
+Baseline Training Script for MicroBiConvLSTM Research Paper
 
 Trains baseline models (TinyHAR, TinierHAR, DeepConvLSTM) on HAR datasets.
+These baselines do NOT include Mamba-based models.
 
 Usage:
     python trainBaselines.py --dataset ucihar --model all --seeds 5
+    python trainBaselines.py --dataset all --model tinyhar --seeds 3
     python trainBaselines.py --dataset skoda --model deepconvlstm --seeds 5
 """
 
@@ -13,6 +16,7 @@ import argparse
 import random
 import time
 import json
+from copy import deepcopy
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
@@ -35,6 +39,8 @@ sys.path.insert(0, str(_REPO_ROOT))
 
 from baselines import TinyHAR, TinierHAR, DeepConvLSTM
 
+
+# ============== Constants ==============
 
 MASTER_SEED = 17
 
@@ -126,6 +132,39 @@ DATASET_CONFIGS = {
 }
 
 
+# ============== Utilities ==============
+
+def parseSeedList(seedList: Optional[str]) -> Optional[List[int]]:
+    """Parse a comma-separated list of explicit seeds."""
+    if not seedList:
+        return None
+    seeds = [int(token.strip()) for token in seedList.split(',') if token.strip()]
+    if not seeds:
+        raise ValueError("Seed list was provided but no valid integer seeds were found.")
+    return seeds
+
+
+def loadBestTrainingParams(modelName: str, datasetName: str) -> Tuple[Dict[str, float], Optional[str]]:
+    """Load best HPO-derived training hyperparameters for a model/dataset pair."""
+    hpoPath = _REPO_DIR / 'results' / 'hpo' / f'hpo_{modelName}_{datasetName}.json'
+    if not hpoPath.exists():
+        return {}, None
+
+    with open(hpoPath, 'r', encoding='utf-8') as f:
+        payload = json.load(f)
+
+    bestTraining = payload.get('bestTrainingParams', {})
+    overrides: Dict[str, float] = {}
+    if 'lr' in bestTraining:
+        overrides['lr'] = float(bestTraining['lr'])
+    if 'weightDecay' in bestTraining:
+        overrides['weightDecay'] = float(bestTraining['weightDecay'])
+    if 'dropout' in bestTraining:
+        overrides['dropout'] = float(bestTraining['dropout'])
+
+    return overrides, str(hpoPath)
+
+
 def setSeed(seed: int):
     """Set random seeds for reproducibility."""
     random.seed(seed)
@@ -187,6 +226,7 @@ def loadDataset(datasetName: str, batchSize: int) -> Tuple[DataLoader, DataLoade
             root='./datasets/UniMiB-SHAR', batchSize=batchSize, numWorkers=0
         )
     elif dsName == 'skoda':
+        # Use LOCAL Skoda loader with OLD stratified split + shuffle
         from data.skoda import getSkodaLoaders
         trainLoader, testLoader, classWeights = getSkodaLoaders(
             root='./datasets/Skoda', batchSize=batchSize, numWorkers=0, returnWeights=True
@@ -205,28 +245,34 @@ def loadDataset(datasetName: str, batchSize: int) -> Tuple[DataLoader, DataLoade
 def createModel(modelName: str, config: dict) -> nn.Module:
     """Create a model instance based on name and config."""
     modelName = modelName.lower()
+    dropout = config.get('dropout')
     
     if modelName == 'tinyhar':
         return TinyHAR(
             numClasses=config['numClasses'],
             inChannels=config['inputChannels'],
             seqLen=config['seqLen'],
+            dropout=dropout if dropout is not None else 0.5,
         )
     elif modelName == 'tinierhar':
         return TinierHAR(
             numClasses=config['numClasses'],
             inChannels=config['inputChannels'],
             seqLen=config['seqLen'],
+            dropout=dropout if dropout is not None else 0.2,
         )
     elif modelName == 'deepconvlstm':
         return DeepConvLSTM(
             numClasses=config['numClasses'],
             inChannels=config['inputChannels'],
             seqLen=config['seqLen'],
+            dropout=dropout if dropout is not None else 0.5,
         )
     else:
         raise ValueError(f"Unknown model: {modelName}")
 
+
+# ============== Training ==============
 
 def trainEpoch(
     model: nn.Module,
@@ -323,12 +369,21 @@ def trainModel(
     """Train a baseline model on a specific dataset with a given seed."""
     setSeed(seed)
     device = getDevice()
-    config = DATASET_CONFIGS[datasetName.lower()]
+    config = deepcopy(DATASET_CONFIGS[datasetName.lower()])
+    hpoOverrides, hpoPath = loadBestTrainingParams(modelName, datasetName.lower())
+    config.update(hpoOverrides)
     
     if verbose:
         print(f"\n{'='*60}")
         print(f"Training {modelName.upper()} on {config['name']}")
         print(f"Seed: {seed} | Device: {device}")
+        print(
+            f"Training Hyperparameters: lr={config['lr']:.6g} | "
+            f"weightDecay={config['weightDecay']:.6g} | "
+            f"dropout={config.get('dropout', 'default')}"
+        )
+        if hpoPath:
+            print(f"HPO Source: {hpoPath}")
         print(f"{'='*60}")
     
     # Load dataset
@@ -366,8 +421,9 @@ def trainModel(
     # Training loop
     bestF1 = 0.0
     bestEpoch = 0
+    bestState = None
     noBetterCount = 0
-    history = {'trainLoss': [], 'trainF1': [], 'testLoss': [], 'testF1': []}
+    history = {'train_loss': [], 'train_f1': [], 'test_loss': [], 'test_f1': []}
     
     startTime = time.time()
     
@@ -382,10 +438,10 @@ def trainModel(
         
         scheduler.step()
         
-        history['trainLoss'].append(trainLoss)
-        history['trainF1'].append(trainF1)
-        history['testLoss'].append(testLoss)
-        history['testF1'].append(testF1)
+        history['train_loss'].append(trainLoss)
+        history['train_f1'].append(trainF1)
+        history['test_loss'].append(testLoss)
+        history['test_f1'].append(testF1)
         
         if testF1 > bestF1:
             bestF1 = testF1
@@ -421,12 +477,21 @@ def trainModel(
         'model': modelName,
         'dataset': datasetName,
         'seed': seed,
-        'bestEpoch': bestEpoch,
-        'testAccuracy': float(finalAcc),
-        'testF1': float(finalF1),
-        'trainingTime': totalTime,
+        'best_epoch': bestEpoch,
+        'test_accuracy': float(finalAcc),
+        'test_f1': float(finalF1),
+        'training_time': totalTime,
         'parameters': sum(p.numel() for p in model.parameters()),
         'history': history,
+        'training_config': {
+            'lr': float(config['lr']),
+            'weightDecay': float(config['weightDecay']),
+            'dropout': float(config.get('dropout', 0.0)),
+            'batchSize': int(config['batchSize']),
+            'epochs': int(epochs),
+            'patience': int(patience),
+        },
+        'hpo_source': hpoPath,
     }
     
     # Save checkpoint
@@ -438,11 +503,29 @@ def trainModel(
         'config': config,
         'result': result,
     }, saveDir / f"seed{seed}_checkpoint.pt")
-    
-    with open(saveDir / f"seed{seed}_results.json", 'w') as f:
-        # Convert numpy arrays in history to lists for JSON serialization
-        resultForJson = {k: v for k, v in result.items() if k != 'history'}
-        json.dump(resultForJson, f, indent=2)
+
+    torch.save(bestState, saveDir / f"seed{seed}_model_state.pt")
+
+    runConfig = {
+        'model': modelName,
+        'dataset': datasetName,
+        'seed': seed,
+        'device': str(device),
+        'paperProtocol': {
+            'optimizer': 'AdamW',
+            'scheduler': 'CosineAnnealingLR',
+            'maxEpochs': epochs,
+            'patience': patience,
+            'selectionMetric': 'macro_f1',
+        },
+        'datasetConfig': config,
+        'hpoSource': hpoPath,
+    }
+    with open(saveDir / f"seed{seed}_run_config.json", 'w', encoding='utf-8') as f:
+        json.dump(runConfig, f, indent=2)
+
+    with open(saveDir / f"seed{seed}_results.json", 'w', encoding='utf-8') as f:
+        json.dump(result, f, indent=2)
     
     return result
 
@@ -451,17 +534,20 @@ def runMultiSeed(
     modelName: str,
     datasetName: str,
     numSeeds: int = 5,
+    explicitSeeds: Optional[List[int]] = None,
     epochs: int = 200,
     patience: int = 10,
     saveDir: str = './results/baselines',
 ) -> dict:
     """Run training with multiple seeds and aggregate results."""
-    seeds = generateRandomSeeds(MASTER_SEED, numSeeds)
+    seeds = explicitSeeds if explicitSeeds is not None else generateRandomSeeds(MASTER_SEED, numSeeds)
     results = []
     
+    seedCount = len(seeds)
+
     for i, seed in enumerate(seeds):
         print(f"\n{'#'*60}")
-        print(f"# Run {i+1}/{numSeeds} - Seed: {seed}")
+        print(f"# Run {i+1}/{seedCount} - Seed: {seed}")
         print(f"{'#'*60}")
         
         result = trainModel(
@@ -475,32 +561,32 @@ def runMultiSeed(
         results.append(result)
     
     # Aggregate
-accuracies = [r['testAccuracy'] for r in results]
-    f1s = [r['testF1'] for r in results]
-
+    accuracies = [r['test_accuracy'] for r in results]
+    f1s = [r['test_f1'] for r in results]
+    
     summary = {
         'model': modelName,
         'dataset': datasetName,
-        'numSeeds': numSeeds,
-        'accuracyMean': float(np.mean(accuracies)),
-        'accuracyStd': float(np.std(accuracies)),
-        'f1Mean': float(np.mean(f1s)),
-        'f1Std': float(np.std(f1s)),
-        'individualResults': results,
+        'num_seeds': len(seeds),
+        'seeds': seeds,
+        'accuracy_mean': float(np.mean(accuracies)),
+        'accuracy_std': float(np.std(accuracies)),
+        'f1_mean': float(np.mean(f1s)),
+        'f1_std': float(np.std(f1s)),
+        'individual_results': results,
     }
     
     # Save summary
     saveDir = Path(saveDir) / modelName / datasetName
     saveDir.mkdir(parents=True, exist_ok=True)
     
-    with open(saveDir / "summary.json", 'w') as f:
-        summaryForJson = {k: v for k, v in summary.items() if k != 'individualResults'}
-        json.dump(summaryForJson, f, indent=2)
+    with open(saveDir / "summary.json", 'w', encoding='utf-8') as f:
+        json.dump(summary, f, indent=2)
     
     print(f"\n{'='*60}")
     print(f"SUMMARY: {modelName.upper()} on {datasetName.upper()}")
-    print(f"  Accuracy: {summary['accuracyMean']*100:.2f}% +/- {summary['accuracyStd']*100:.2f}%")
-    print(f"  F1 Score: {summary['f1Mean']*100:.2f}% +/- {summary['f1Std']*100:.2f}%")
+    print(f"  Accuracy: {summary['accuracy_mean']*100:.2f}% ± {summary['accuracy_std']*100:.2f}%")
+    print(f"  F1 Score: {summary['f1_mean']*100:.2f}% ± {summary['f1_std']*100:.2f}%")
     print(f"{'='*60}")
     
     return summary
@@ -516,6 +602,8 @@ def main():
                         help='Dataset to use')
     parser.add_argument('--seeds', type=int, default=5,
                         help='Number of random seeds')
+    parser.add_argument('--seed-list', type=str, default=None,
+                        help='Comma-separated explicit seeds to use instead of generating from MASTER_SEED')
     parser.add_argument('--epochs', type=int, default=200,
                         help='Maximum training epochs')
     parser.add_argument('--patience', type=int, default=10,
@@ -524,6 +612,7 @@ def main():
                         help='Output directory')
     
     args = parser.parse_args()
+    explicitSeeds = parseSeedList(args.seed_list)
     
     models = MODELS if args.model == 'all' else [args.model]
     datasets = DATASETS if args.dataset == 'all' else [args.dataset]
@@ -537,6 +626,7 @@ def main():
                     modelName=model,
                     datasetName=dataset,
                     numSeeds=args.seeds,
+                    explicitSeeds=explicitSeeds,
                     epochs=args.epochs,
                     patience=args.patience,
                     saveDir=args.outDir,
@@ -554,8 +644,8 @@ def main():
     print(f"{'Model':<15} {'Dataset':<15} {'Accuracy':<20} {'F1 Score':<20}")
     print("-"*80)
     for s in allSummaries:
-        acc = f"{s['accuracyMean']*100:.2f}% +/- {s['accuracyStd']*100:.2f}%"
-        f1 = f"{s['f1Mean']*100:.2f}% +/- {s['f1Std']*100:.2f}%"
+        acc = f"{s['accuracy_mean']*100:.2f}% ± {s['accuracy_std']*100:.2f}%"
+        f1 = f"{s['f1_mean']*100:.2f}% ± {s['f1_std']*100:.2f}%"
         print(f"{s['model']:<15} {s['dataset']:<15} {acc:<20} {f1:<20}")
     print("="*80)
 

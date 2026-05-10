@@ -1,0 +1,38 @@
+{
+  "model": "tinyhar",
+  "dataset": "ucihar",
+  "desktop_int8_parity_pct": 15.060318556182661,
+  "desktop_int8_tensor_bytes": 399284,
+  "model_bytes": 221248,
+  "parameter_count": 42704,
+  "success": true,
+  "tensor_arena_alloc_bytes": 163840,
+  "heap_total_internal_bytes_before_setup": 318688,
+  "heap_free_internal_bytes_before_setup": 303292,
+  "largest_internal_block_before_setup_bytes": 172032,
+  "avg_latency_us": 673217.0,
+  "heap_total_internal_bytes": 318688,
+  "heap_free_internal_bytes": 138768,
+  "heap_used_internal_bytes": 179920,
+  "largest_internal_block_bytes": 110592,
+  "tensor_arena_used_bytes": 120760,
+  "avg_parity_vs_pytorch_pct": 19.599993,
+  "avg_parity_vs_tflite_int8_pct": 71.423637,
+  "avg_rmse_vs_pytorch": 7.662516,
+  "avg_max_abs_err_vs_pytorch": 13.51333,
+  "cosine_vs_pytorch": -0.122653946,
+  "predicted_class": {
+    "index": 1,
+    "label": "WALKING_UPSTAIRS"
+  },
+  "expected_class": {
+    "index": 4,
+    "label": "STANDING"
+  },
+  "latency_min_us": 669508,
+  "latency_max_us": 706400,
+  "latency_std_us": 10546.252958019993,
+  "requested_arena_bytes": 163840,
+  "parity_drop_pct_points": -4.53967444381734,
+  "top1_match_on_esp32": false
+}

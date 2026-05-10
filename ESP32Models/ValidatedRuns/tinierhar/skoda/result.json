@@ -1,0 +1,41 @@
+{
+  "model": "tinierhar",
+  "dataset": "skoda",
+  "desktop_int8_parity_pct": 99.3864845469894,
+  "desktop_int8_tensor_bytes": 361740,
+  "model_bytes": 280128,
+  "parameter_count": 49352,
+  "firmware_flash_bytes": 584512,
+  "app_partition_bytes": 3538944,
+  "success": true,
+  "boot_app_partition_bytes": 3538944,
+  "tensor_arena_alloc_bytes": 180224,
+  "heap_total_internal_bytes_before_setup": 330528,
+  "heap_free_internal_bytes_before_setup": 320536,
+  "largest_internal_block_before_setup_bytes": 180224,
+  "avg_latency_us": 369053.5,
+  "heap_total_internal_bytes": 330528,
+  "heap_free_internal_bytes": 139672,
+  "heap_used_internal_bytes": 190856,
+  "largest_internal_block_bytes": 126976,
+  "tensor_arena_used_bytes": 176400,
+  "avg_parity_vs_pytorch_pct": 99.399971,
+  "avg_parity_vs_tflite_int8_pct": 99.450272,
+  "avg_rmse_vs_pytorch": 0.057528,
+  "avg_max_abs_err_vs_pytorch": 0.120438,
+  "cosine_vs_pytorch": 0.999961,
+  "predicted_class": {
+    "index": 9,
+    "label": "open_close_trunk"
+  },
+  "expected_class": {
+    "index": 9,
+    "label": "open_close_trunk"
+  },
+  "latency_min_us": 369033,
+  "latency_max_us": 369063,
+  "latency_std_us": 7.620112578071229,
+  "requested_arena_bytes": 180224,
+  "parity_drop_pct_points": -0.01348645301060003,
+  "top1_match_on_esp32": true
+}

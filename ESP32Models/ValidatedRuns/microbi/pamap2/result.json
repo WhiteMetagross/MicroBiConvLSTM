@@ -1,0 +1,38 @@
+{
+  "model": "microbi",
+  "dataset": "pamap2",
+  "desktop_int8_parity_pct": 96.88315775763189,
+  "desktop_int8_tensor_bytes": 75252,
+  "model_bytes": 302608,
+  "parameter_count": 11548,
+  "success": true,
+  "tensor_arena_alloc_bytes": 172032,
+  "heap_total_internal_bytes_before_setup": 318776,
+  "heap_free_internal_bytes_before_setup": 303380,
+  "largest_internal_block_before_setup_bytes": 172032,
+  "avg_latency_us": 178496.703,
+  "heap_total_internal_bytes": 318776,
+  "heap_free_internal_bytes": 130728,
+  "heap_used_internal_bytes": 188048,
+  "largest_internal_block_bytes": 110592,
+  "tensor_arena_used_bytes": 109776,
+  "avg_parity_vs_pytorch_pct": 96.883163,
+  "avg_parity_vs_tflite_int8_pct": 100.0,
+  "avg_rmse_vs_pytorch": 0.182788,
+  "avg_max_abs_err_vs_pytorch": 0.351398,
+  "cosine_vs_pytorch": 0.997936428,
+  "predicted_class": {
+    "index": 2,
+    "label": "standing"
+  },
+  "expected_class": {
+    "index": 0,
+    "label": "lying"
+  },
+  "latency_min_us": 178488,
+  "latency_max_us": 178506,
+  "latency_std_us": 5.398193759746736,
+  "requested_arena_bytes": 172032,
+  "parity_drop_pct_points": -5.242368104063644e-06,
+  "top1_match_on_esp32": false
+}

@@ -513,7 +513,7 @@ For typical HAR activities (walking, running, sitting), 2 layers provide adequat
 | Mean Pooling | Robust to timing variations | Dilutes important features |
 | Attention | Learns importance weights | Adds parameters |
 
-Last timestep is chosen for simplicity and efficiency—the bidirectional LSTM already captures full sequence context.
+Last timestep is chosen for simplicity and efficiency, because the bidirectional LSTM already captures full sequence context.
 
 ---
 
@@ -709,7 +709,7 @@ Signal Rescue Pipeline:
 
 *Values verified using hook-based benchmark calculation (scripts/calculateBenchmarksVerified.py)*
 
-### Performance Comparison (F1 Score %) — Mean ± Std:
+### Performance Comparison (F1 Score %) Mean ± Std:
 
 | Dataset | MicroBiConvLSTM | DeepConvLSTM | TinyHAR | TinierHAR |
 |---------|-------------------|--------------|---------|-----------|
@@ -723,7 +723,7 @@ Signal Rescue Pipeline:
 | Daphnet | 88.98 ± 1.64 | 88.95 ± 2.26 | 86.42 ± 3.64 | **89.84 ± 1.90** |
 | **Average** | **83.68%** | **85.93%** | **86.16%** | **87.39%** |
 
-### Accuracy Comparison (%) — Mean ± Std:
+### Accuracy Comparison (%) Mean ± Std:
 
 | Dataset | MicroBiConvLSTM | DeepConvLSTM | TinyHAR | TinierHAR |
 |---------|-------------------|--------------|---------|-----------|

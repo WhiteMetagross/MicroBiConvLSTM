@@ -1,0 +1,38 @@
+{
+  "model": "tinyhar",
+  "dataset": "wisdm",
+  "desktop_int8_parity_pct": 98.85554909580023,
+  "desktop_int8_tensor_bytes": 190052,
+  "model_bytes": 213464,
+  "parameter_count": 35792,
+  "success": true,
+  "tensor_arena_alloc_bytes": 163840,
+  "heap_total_internal_bytes_before_setup": 318760,
+  "heap_free_internal_bytes_before_setup": 303364,
+  "largest_internal_block_before_setup_bytes": 172032,
+  "avg_latency_us": 347674.312,
+  "heap_total_internal_bytes": 318760,
+  "heap_free_internal_bytes": 138808,
+  "heap_used_internal_bytes": 179952,
+  "largest_internal_block_bytes": 110592,
+  "tensor_arena_used_bytes": 78400,
+  "avg_parity_vs_pytorch_pct": 99.205788,
+  "avg_parity_vs_tflite_int8_pct": 99.126457,
+  "avg_rmse_vs_pytorch": 0.070738,
+  "avg_max_abs_err_vs_pytorch": 0.134672,
+  "cosine_vs_pytorch": 0.999836028,
+  "predicted_class": {
+    "index": 1,
+    "label": "Jogging"
+  },
+  "expected_class": {
+    "index": 1,
+    "label": "Jogging"
+  },
+  "latency_min_us": 344075,
+  "latency_max_us": 379333,
+  "latency_std_us": 10061.840000633438,
+  "requested_arena_bytes": 163840,
+  "parity_drop_pct_points": -0.3502389041997702,
+  "top1_match_on_esp32": true
+}

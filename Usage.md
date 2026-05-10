@@ -1,4 +1,4 @@
-# MicroBiConvLSTM Usage Guide.
+# MicroBiConvLSTM Usage Guide:
 
 **Author:** Mridankan Mandal
 
@@ -8,23 +8,24 @@ This document provides detailed instructions for using the MicroBiConvLSTM codeb
 
 ---
 
-## Table of Contents.
+## Table of Contents:
 
-1. [Prerequisites](#prerequisites)
-2. [Dataset Preparation](#dataset-preparation)
-3. [Training MicroBiConvLSTM](#training-microbiconvlstm)
-4. [Training Baseline Models](#training-baseline-models)
-5. [Hyperparameter Optimization](#hyperparameter-optimization)
-6. [Ablation Studies](#ablation-studies)
-7. [Memory Footprint Benchmarking](#memory-footprint-benchmarking)
-8. [Generating Publication Figures](#generating-publication-figures)
-9. [Sensor Data Visualization](#sensor-data-visualization)
-10. [Model Creation and Inference](#model-creation-and-inference)
-11. [Understanding the Results](#understanding-the-results)
+1. [Prerequisites](#prerequisites).
+2. [Dataset Preparation](#dataset-preparation).
+3. [Training MicroBiConvLSTM](#training-microbiconvlstm).
+4. [Training Baseline Models](#training-baseline-models).
+5. [Hyperparameter Optimization](#hyperparameter-optimization).
+6. [Ablation Studies](#ablation-studies).
+7. [Memory Footprint Benchmarking](#memory-footprint-benchmarking).
+8. [Generating Publication Figures](#generating-publication-figures).
+9. [Sensor Data Visualization](#sensor-data-visualization).
+10. [Model Creation and Inference](#model-creation-and-inference).
+11. [Edge Deployment](#edge-deployment).
+12. [Understanding the Results](#understanding-the-results).
 
 ---
 
-## Prerequisites.
+## Prerequisites:
 
 Before using the scripts, ensure the following are in place.
 
@@ -35,7 +36,7 @@ Before using the scripts, ensure the following are in place.
 
 ---
 
-## Dataset Preparation.
+## Dataset Preparation:
 
 The data loaders expect the datasets to be organized in the following structure relative to the repository root.
 
@@ -59,7 +60,7 @@ datasets/
 |-- Daphnet/
 ```
 
-### Dataset Download Sources.
+### Dataset Download Sources:
 
 | Dataset | Source |
 |---------|--------|
@@ -76,11 +77,11 @@ Download each dataset manually and extract it into the corresponding folder unde
 
 ---
 
-## Training MicroBiConvLSTM.
+## Training MicroBiConvLSTM:
 
 The main training script is `scripts/trainMicroBiConvLstm.py`. It trains the MicroBiConvLSTM model with HPO-tuned hyperparameters, multi-seed evaluation, early stopping, and AMP/FP16 acceleration.
 
-### Training on a Single Dataset.
+### Training on a Single Dataset:
 
 ```bash
 python scripts/trainMicroBiConvLstm.py --dataset ucihar --seeds 5
@@ -88,7 +89,7 @@ python scripts/trainMicroBiConvLstm.py --dataset ucihar --seeds 5
 
 This command trains MicroBiConvLSTM on UCI-HAR with 5 random seeds derived from the master seed (17). Results are saved to `results/training/` and checkpoints are saved to `checkpoints/`.
 
-### Training on All Datasets.
+### Training on All Datasets:
 
 ```bash
 python scripts/trainMicroBiConvLstm.py --dataset all --seeds 5
@@ -96,7 +97,7 @@ python scripts/trainMicroBiConvLstm.py --dataset all --seeds 5
 
 This sequentially trains the model on all eight datasets.
 
-### Command-Line Arguments for Training.
+### Command-Line Arguments for Training:
 
 | Argument | Default | Description |
 |----------|---------|-------------|
@@ -105,7 +106,7 @@ This sequentially trains the model on all eight datasets.
 | `--epochs` | `200` | Maximum number of training epochs. |
 | `--patience` | `10` | Early stopping patience (epochs without improvement). |
 
-### Training Protocol Details.
+### Training Protocol Details:
 
 - The optimizer is AdamW with dataset-specific learning rate and weight decay (from HPO).
 - The learning rate scheduler is CosineAnnealingLR with minimum LR of 1e-6.
@@ -114,7 +115,7 @@ This sequentially trains the model on all eight datasets.
 - For imbalanced datasets (PAMAP2, Opportunity, Skoda, Daphnet), class weights are applied to the CrossEntropyLoss.
 - Mixed precision training (AMP/FP16) is automatically enabled when a CUDA GPU is available.
 
-### Output Files.
+### Output Files:
 
 After training, the following files are produced.
 
@@ -123,29 +124,29 @@ After training, the following files are produced.
 
 ---
 
-## Training Baseline Models.
+## Training Baseline Models:
 
 The baseline training script is `scripts/trainBaselines.py`. It supports training DeepConvLSTM, TinyHAR, and TinierHAR with the same training protocol used for MicroBiConvLSTM.
 
-### Training a Specific Baseline on a Single Dataset.
+### Training a Specific Baseline on a Single Dataset:
 
 ```bash
 python scripts/trainBaselines.py --dataset ucihar --model tinyhar --seeds 5
 ```
 
-### Training All Baselines on a Single Dataset.
+### Training All Baselines on a Single Dataset:
 
 ```bash
 python scripts/trainBaselines.py --dataset ucihar --model all --seeds 5
 ```
 
-### Training All Baselines on All Datasets.
+### Training All Baselines on All Datasets:
 
 ```bash
 python scripts/trainBaselines.py --dataset all --model all --seeds 5
 ```
 
-### Command-Line Arguments for Baselines.
+### Command-Line Arguments for Baselines:
 
 | Argument | Default | Description |
 |----------|---------|-------------|
@@ -155,42 +156,42 @@ python scripts/trainBaselines.py --dataset all --model all --seeds 5
 | `--epochs` | `200` | Maximum training epochs. |
 | `--patience` | `10` | Early stopping patience. |
 
-### Output Files.
+### Output Files:
 
 - `results/baselines/{model}/{dataset}/seed{seed}_checkpoint.pt` -- Model checkpoint.
 - `results/baselines/{model}/{dataset}/seed{seed}_results.json` -- Per-seed result file.
 
 ---
 
-## Hyperparameter Optimization.
+## Hyperparameter Optimization:
 
 HPO is performed using Optuna with a TPE (Tree-structured Parzen Estimator) sampler. The architecture is frozen during HPO and only three training hyperparameters are tuned: learning rate, weight decay, and dropout.
 
-### HPO for MicroBiConvLSTM.
+### HPO for MicroBiConvLSTM:
 
 ```bash
 python scripts/hpoMicroBiConvLstm.py --dataset ucihar --n-trials 50
 ```
 
-### HPO for All Datasets.
+### HPO for All Datasets:
 
 ```bash
 python scripts/hpoMicroBiConvLstm.py --dataset all --n-trials 50
 ```
 
-### HPO for Baseline Models.
+### HPO for Baseline Models:
 
 ```bash
 python scripts/hpoBaselines.py --model tinyhar --dataset ucihar --n-trials 50
 ```
 
-### HPO for All Baselines on All Datasets.
+### HPO for All Baselines on All Datasets:
 
 ```bash
 python scripts/hpoBaselines.py --model all --dataset all --n-trials 50
 ```
 
-### HPO Command-Line Arguments.
+### HPO Command-Line Arguments:
 
 | Argument | Default | Description |
 |----------|---------|-------------|
@@ -202,7 +203,7 @@ python scripts/hpoBaselines.py --model all --dataset all --n-trials 50
 | `--seed` | `42` | Random seed for reproducibility. |
 | `--save-dir` | `./hpo_results` | Directory to save HPO results. |
 
-### HPO Search Space.
+### HPO Search Space:
 
 | Hyperparameter | Range | Scale |
 |----------------|-------|-------|
@@ -210,18 +211,18 @@ python scripts/hpoBaselines.py --model all --dataset all --n-trials 50
 | Weight Decay | 1e-5 to 0.05 | Log-uniform |
 | Dropout | 0.0 to 0.5 | Uniform |
 
-### Output Files.
+### Output Files:
 
 - `hpo_results/microBiConvLstm_{dataset}_hpo.json` -- HPO results including best trial, optimal parameters, and all trial data.
 - `hpo_results/{model}_{dataset}_hpo.json` -- Baseline HPO results.
 
 ---
 
-## Ablation Studies.
+## Ablation Studies:
 
 The ablation study runner supports five distinct study types. All studies use a fixed learning rate of 1e-3 by default for controlled comparison.
 
-### Architectural Ablation (A0-A4).
+### Architectural Ablation (A0-A4):
 
 Trains and evaluates the five architectural variants.
 
@@ -229,7 +230,7 @@ Trains and evaluates the five architectural variants.
 python scripts/ablationStudiesMicroBiConvLstm.py --dataset ucihar --study arch --seeds 5
 ```
 
-### Pareto Grid Search.
+### Pareto Grid Search:
 
 Explores the parameter space by varying convFilters and lstmHidden sizes.
 
@@ -243,7 +244,7 @@ The default grid searches over `convFilters` in {8, 16, 24} and `lstmHidden` in 
 python scripts/ablationStudiesMicroBiConvLstm.py --dataset ucihar --study pareto --conv-grid 8,16,24,32 --lstm-grid 16,24,32,48
 ```
 
-### Complexity Scaling Verification.
+### Complexity Scaling Verification:
 
 Verifies O(N) complexity by computing MACs at different sequence lengths.
 
@@ -251,7 +252,7 @@ Verifies O(N) complexity by computing MACs at different sequence lengths.
 python scripts/ablationStudiesMicroBiConvLstm.py --dataset ucihar --study complexity
 ```
 
-### INT8 Post-Training Quantization.
+### INT8 Post-Training Quantization:
 
 Evaluates accuracy retention after dynamic INT8 quantization.
 
@@ -261,7 +262,7 @@ python scripts/ablationStudiesMicroBiConvLstm.py --dataset ucihar --study quant
 
 This requires a trained A0 checkpoint. Run `--study arch` first.
 
-### Sensitivity and Robustness.
+### Sensitivity and Robustness:
 
 Evaluates model robustness under channel dropout, sampling jitter, and preprocessing bypass.
 
@@ -269,7 +270,7 @@ Evaluates model robustness under channel dropout, sampling jitter, and preproces
 python scripts/ablationStudiesMicroBiConvLstm.py --dataset pamap2 --study sensitivity
 ```
 
-### Running All Studies on All Datasets.
+### Running All Studies on All Datasets:
 
 ```bash
 for dataset in ucihar motionsense wisdm pamap2 opportunity unimib skoda daphnet; do
@@ -279,7 +280,7 @@ for dataset in ucihar motionsense wisdm pamap2 opportunity unimib skoda daphnet;
 done
 ```
 
-### Ablation Command-Line Arguments.
+### Ablation Command-Line Arguments:
 
 | Argument | Default | Description |
 |----------|---------|-------------|
@@ -292,35 +293,35 @@ done
 | `--conv-grid` | `8,16,24` | Comma-separated conv filter sizes for Pareto study. |
 | `--lstm-grid` | `16,24,32` | Comma-separated LSTM hidden sizes for Pareto study. |
 
-### Output Files.
+### Output Files:
 
 Results are saved to `results/ablations/{dataset}/{study}/` with JSON artifacts and optional plots.
 
 ---
 
-## Memory Footprint Benchmarking.
+## Memory Footprint Benchmarking:
 
 Measures and compares model sizes across FP32 and INT8 formats.
 
-### Benchmark a Single Dataset.
+### Benchmark a Single Dataset:
 
 ```bash
 python scripts/benchmarkMemoryFootprint.py --dataset ucihar
 ```
 
-### Benchmark All Datasets.
+### Benchmark All Datasets:
 
 ```bash
 python scripts/benchmarkMemoryFootprint.py --all-datasets
 ```
 
-### CPU-Only Mode.
+### CPU-Only Mode:
 
 ```bash
 python scripts/benchmarkMemoryFootprint.py --all-datasets --cpu-only
 ```
 
-### Markdown Output.
+### Markdown Output:
 
 ```bash
 python scripts/benchmarkMemoryFootprint.py --dataset ucihar --output-format markdown
@@ -328,7 +329,7 @@ python scripts/benchmarkMemoryFootprint.py --dataset ucihar --output-format mark
 
 ---
 
-## Generating Publication Figures.
+## Generating Publication Figures:
 
 The `create_paper_figures.py` script generates all publication-quality figures.
 
@@ -347,7 +348,7 @@ This creates the following figures in the output directory.
 
 ---
 
-## Sensor Data Visualization.
+## Sensor Data Visualization:
 
 The `visualize_sensor_waves.py` script creates publication-quality visualizations of raw sensor waveforms from the UCI-HAR dataset.
 
@@ -359,9 +360,9 @@ This produces vertical wave plots showing accelerometer and gyroscope channels f
 
 ---
 
-## Model Creation and Inference.
+## Model Creation and Inference:
 
-### Creating a MicroBiConvLSTM Model in Python.
+### Creating a MicroBiConvLSTM Model in Python:
 
 ```python
 from models import createMicroBiConvLstm
@@ -375,7 +376,7 @@ for key, value in info.items():
     print(f"  {key}: {value}")
 ```
 
-### Running Inference.
+### Running Inference:
 
 ```python
 import torch
@@ -396,7 +397,7 @@ with torch.no_grad():
     print(f"Predicted class: {predicted_class}")
 ```
 
-### Creating Baseline Models.
+### Creating Baseline Models:
 
 ```python
 from baselines import DeepConvLSTM, TinyHAR, TinierHAR
@@ -410,7 +411,7 @@ thar = createTinyHar('ucihar')
 tinier = createTinierHar('ucihar')
 ```
 
-### Creating Ablation Variants.
+### Creating Ablation Variants:
 
 ```python
 from models import makeVariantSpec, createVariantModel
@@ -428,9 +429,59 @@ model = createVariantModel(spec)
 
 ---
 
-## Understanding the Results.
+## Edge Deployment:
 
-### Training Results.
+The repository includes a full post-training deployment path for Pico 2 and ESP32.
+
+### Paper-Style Retraining:
+
+Run the full paper protocol with explicit seeds, checkpoint saving, and per-run manifests.
+
+```bash
+python scripts/runPaperRetraining.py --models all --datasets all --seed-list 29 --epochs 200 --patience 10
+```
+
+### Exporting ONNX, TFLite, and TFLM Bundles:
+
+Export one trained checkpoint:
+
+```bash
+python scripts/exportEdgeModels.py --model microbi --dataset motionsense --checkpoint path/to/checkpoint.pt
+```
+
+Convert a completed retraining sweep:
+
+```bash
+python scripts/convertPaperRetraining.py --run-dir results/paperRetraining/<run_name>
+```
+
+### Pico 2 Runtime:
+
+Prepare and benchmark Pico 2 deployments:
+
+```bash
+python scripts/runPico2DeploymentSweep.py --models microbi --datasets all --port COM8
+```
+
+### Native ESP32 Runtime:
+
+Prepare and benchmark native ESP-IDF ESP32 deployments:
+
+```bash
+python scripts/runEsp32NativeDeploymentSweep.py --models microbi --datasets all --port COM9
+```
+
+### Related Documentation:
+
+- [docs/EdgeDeployment.md](docs/EdgeDeployment.md).
+- [docs/Pico2DeploymentResultsReport.md](docs/Pico2DeploymentResultsReport.md).
+- [docs/ESP32DeploymentResultsReport.md](docs/ESP32DeploymentResultsReport.md).
+
+---
+
+## Understanding the Results:
+
+### Training Results:
 
 The training results in `results/TrainingResults.md` and the JSON files in `results/training/` contain.
 
@@ -441,7 +492,7 @@ The training results in `results/TrainingResults.md` and the JSON files in `resu
 
 All results report the mean and standard deviation across 5 random seeds.
 
-### HPO Results.
+### HPO Results:
 
 The HPO results in `results/HPOResults.md` and the JSON files in `results/hpo/` contain.
 
@@ -449,7 +500,7 @@ The HPO results in `results/HPOResults.md` and the JSON files in `results/hpo/` 
 - **Optimal Hyperparameters:** The learning rate, weight decay, and dropout values that produced the best result.
 - **Trial History:** All trial outcomes for reproducibility.
 
-### Ablation Results.
+### Ablation Results:
 
 The ablation results in `results/ablations/AblationsResults.md` contain.
 
@@ -459,7 +510,7 @@ The ablation results in `results/ablations/AblationsResults.md` contain.
 - **Complexity scaling data** verifying O(N) behavior.
 - **Quantization accuracy retention** for INT8 evaluation.
 
-### Interpreting Figures.
+### Interpreting Figures:
 
 - **Benchmark Comparison Grid:** Shows all models side by side across eight datasets. Use this to compare MicroBiConvLSTM against baselines on each metric.
 - **Ablation Study Grid:** Shows how removing each component affects performance. The base model (A0) is the reference point.
