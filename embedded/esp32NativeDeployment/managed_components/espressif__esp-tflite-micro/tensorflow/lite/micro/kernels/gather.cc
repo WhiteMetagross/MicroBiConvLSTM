@@ -132,6 +132,7 @@ TfLiteStatus GatherPrepare(TfLiteContext* context, TfLiteNode* node) {
   switch (input->type) {
     case kTfLiteFloat32:
     case kTfLiteInt8:
+    case kTfLiteInt16:
       break;
     default:
       MicroPrintf("Type '%s' is not supported by gather.",
@@ -205,6 +206,9 @@ TfLiteStatus GatherEval(TfLiteContext* context, TfLiteNode* node) {
         break;
       case kTfLiteInt8:
         return Gather<int8_t, int32_t>(params, input, coords, output);
+        break;
+      case kTfLiteInt16:
+        return Gather<int16_t, int32_t>(params, input, coords, output);
         break;
       default:
         MicroPrintf("Type '%s' is not supported by gather.",

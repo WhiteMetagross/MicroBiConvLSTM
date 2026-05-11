@@ -46,6 +46,7 @@ TfLiteStatus GatherNdPrepare(TfLiteContext* context, TfLiteNode* node) {
   switch (params->type) {
     case kTfLiteFloat32:
     case kTfLiteInt8:
+    case kTfLiteInt16:
       break;
     default:
       MicroPrintf("Params of type '%s' are not supported by gather_nd.",
@@ -173,6 +174,9 @@ TfLiteStatus EvalGatherNd(TfLiteContext* context,
       break;
     case kTfLiteInt8:
       status = GatherNd<int8_t, IndicesT>(params, indices, output);
+      break;
+    case kTfLiteInt16:
+      status = GatherNd<int16_t, IndicesT>(params, indices, output);
       break;
     default:
       MicroPrintf("Params type '%s' are not supported by gather_nd.",
