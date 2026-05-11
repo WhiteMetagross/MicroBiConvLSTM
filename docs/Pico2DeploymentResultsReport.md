@@ -2,105 +2,105 @@
 
 ## Scope:
 
-This report consolidates the Raspberry Pi Pico 2 deployment study carried out for the paper-aligned MicroBiConvLSTM retraining sweep and the three baseline families, namely TinyHAR, TinierHAR, and DeepConvLSTM. All values reported below were taken from on-device execution unless a row is explicitly marked as an allocation failure.
+This report consolidates the corrected Raspberry Pi Pico 2 deployment study for `MicroBiConvLSTM` and the three baseline families, namely `TinyHAR`, `TinierHAR`, and `DeepConvLSTM`. Both `FP32` and `INT8` deployment variants were examined on the board wherever the runtime could be brought to completion. When a deployment did not complete, the row has been preserved as a real allocator or buffer-sizing failure rather than being left as an unresolved gap.
 
-The report should be read as a deployment document rather than as a training summary. The emphasis was placed on what was actually sustained by the board, including flash footprint, tensor arena usage, heap pressure, latency, and fidelity relative to the desktop reference outputs.
+The present report supersedes the earlier Pico summary that relied too heavily on the first `INT8` runs alone. The final repository state should therefore be read through the consolidated deployment matrix in `Pico2Models/Results/pico2Fp32Int8Results.json`, together with the per-family raw summaries retained in the same directory.
 
 Primary result sources were as follows.
 
+- `Pico2Models/Results/pico2Fp32Int8Results.json`.
+- `Pico2Models/Results/pico2Fp32Int8Results.md`.
 - `Pico2Models/Results/microbiPico2Metrics.json`.
 - `Pico2Models/Results/baselinePico2Metrics.json`.
-- `Pico2Models/Results/baselineValidRunsSummary.json`.
 - `scripts/runPico2DeploymentSweep.py`.
-- `scripts/generatePicoFixture.py`.
+- `scripts/compilePico2VariantResults.py`.
 
 ## Executive Summary:
 
-MicroBiConvLSTM was found to be the strongest Pico 2 deployment candidate in this study. Full dataset coverage was achieved, memory behaviour remained stable across all eight datasets, and the latency profile stayed materially below the baseline families. The average latency was measured at approximately `72.813 ms`, while the average arena usage remained close to `109.6 KB`.
+The corrected Pico 2 picture is now much clearer than in the earlier draft. `MicroBiConvLSTM` completed all `8/8` datasets in both `INT8` and `FP32`, but the fidelity story differed sharply between the two variants. The `FP32` path reached effectively exact PyTorch agreement across every dataset, whereas the `INT8` path exhibited substantial parity loss on several datasets despite successful execution.
 
-The baseline picture was more mixed. TinyHAR ran on most datasets, but one dataset failed at the allocator stage and several successful runs exhibited substantial prediction drift. TinierHAR fit more broadly in memory, yet its parity behaviour was unstable on several datasets despite successful execution. DeepConvLSTM behaved as the clearest negative control, with most runs failing before inference could be completed.
+The baselines behaved less uniformly. `TinyHAR` improved materially under `FP32`, but three heavier datasets still exceeded the practical Pico memory envelope. `TinierHAR` proved to be a much stronger `FP32` candidate than the initial `INT8` study suggested, completing `7/8` datasets with effectively exact parity. `DeepConvLSTM` remained the negative control. Only `daphnet` completed on-device in either numeric mode, and parity stayed poor even in `FP32`.
 
-From a paper-quality deployment standpoint, the Pico 2 data supports a straightforward conclusion. MicroBiConvLSTM offered the best joint balance of board compatibility, runtime efficiency, and output fidelity.
+The paper-facing conclusion is therefore straightforward. On Pico 2, `MicroBiConvLSTM` should be interpreted as a high-fidelity deployment family when the `FP32` bundles are used. The low-parity issue is not a universal microcontroller property of the model, but mainly an `INT8` deployment-path effect for this TFLite Micro stack.
 
-## Family-Level Comparison:
+## Variant-Level Summary:
 
-| Model | Successful Datasets | Failed Datasets | Avg Latency ms | Avg Arena Used B | Avg Heap Used B | Avg PyTorch Parity % | Avg Flash B | Avg Model B | Deployment Interpretation |
+| Model | INT8 Runs | INT8 Fails | Avg INT8 Latency (ms) | Avg INT8 Parity (%) | FP32 Runs | FP32 Fails | Avg FP32 Latency (ms) | Avg FP32 Parity (%) | Deployment Readout |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| MicroBiConvLSTM | 8 | 0 | 72.813 | 109630 | 432050 | 85.665 | 647069 | 275088 | Full board coverage with the strongest overall deployment profile. |
-| TinyHAR | 7 | 1 | 354.053 | 123188 | 432050 | 60.447 | 572644 | 195484 | Broadly runnable, but fidelity was inconsistent. |
-| TinierHAR | 8 | 0 | 229.326 | 183974 | 432050 | 54.230 | 691539 | 312433 | Memory fit was good, but parity drift remained a concern. |
-| DeepConvLSTM | 1 | 7 | 768.780 | 244084 | 432048 | 25.482 | 1239620 | 865304 | The board was generally overmatched by this family. |
+| `MicroBiConvLSTM` | 8 | 0 | 72.813 | 85.665 | 8 | 0 | 83.002 | 99.999992 | Full coverage in both modes. `FP32` is the research-grade Pico path. |
+| `TinyHAR` | 7 | 1 | 354.053 | 60.447 | 5 | 3 | 486.132 | 89.584 | Partial recovery in `FP32`, but several datasets remain memory-limited. |
+| `TinierHAR` | 8 | 0 | 229.326 | 54.230 | 7 | 1 | 231.524 | 99.999986 | `FP32` becomes highly faithful, with one heavy dataset still exceeding the buffer budget. |
+| `DeepConvLSTM` | 1 | 7 | 768.780 | 25.482 | 1 | 7 | 2034.567 | 26.312 | The family is not practically deployable on Pico 2 in this configuration. |
 
-## MicroBiConvLSTM Results:
+## MicroBiConvLSTM:
 
-MicroBiConvLSTM completed all eight datasets on-device. The board-level behaviour was notably steady. Arena usage changed with dataset shape, as expected, but no catastrophic allocator instability was observed once the model had been embedded successfully.
+`MicroBiConvLSTM` is the strongest Pico 2 result in this repository. Every dataset bundle ran to completion in both variants. The important scientific distinction is that `INT8` execution was not sufficiently faithful on several datasets, whereas `FP32` execution retained essentially exact PyTorch agreement throughout.
 
-| Dataset | Status | Flash B | Model B | Arena Used B | Heap Used B | Avg Latency ms | PyTorch Parity % | Desktop INT8 Parity % | Predicted / Expected |
-| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| ucihar | RUNS | 669436 | 302232 | 118340 | 432048 | 78.914 | 89.874 | 99.276 | STANDING / STANDING |
-| motionsense | RUNS | 666740 | 301112 | 117988 | 432048 | 79.033 | 75.346 | 97.337 | ups / dws |
-| wisdm | RUNS | 664988 | 300872 | 117988 | 432048 | 76.634 | 91.356 | 98.558 | Jogging / Jogging |
-| pamap2 | RUNS | 675060 | 302608 | 118724 | 432048 | 76.969 | 89.002 | 96.883 | standing / lying |
-| opportunity | RUNS | 710748 | 307768 | 134436 | 432052 | 89.878 | 94.709 | 99.181 | class_0 / class_0 |
-| unimib | RUNS | 665260 | 301112 | 117988 | 432052 | 77.154 | 77.169 | 96.008 | class_0 / class_0 |
-| skoda | RUNS | 604444 | 229904 | 91972 | 432052 | 63.656 | 95.906 | 99.582 | open_close_trunk / open_close_trunk |
-| daphnet | RUNS | 519876 | 155096 | 59604 | 432048 | 40.267 | 71.953 | 98.602 | class_0 / class_0 |
+| Dataset | INT8 Latency (ms) | INT8 Parity (%) | FP32 Latency (ms) | FP32 Parity (%) | Interpretation |
+| --- | ---: | ---: | ---: | ---: | --- |
+| `ucihar` | 78.914 | 89.874 | 64.800 | 99.999992 | `FP32` removes the remaining fidelity gap. |
+| `motionsense` | 79.033 | 75.346 | 62.331 | 99.999992 | A large `INT8` drift is fully corrected in `FP32`. |
+| `wisdm` | 76.634 | 91.356 | 60.475 | 99.999992 | `INT8` was already acceptable, but `FP32` becomes exact. |
+| `pamap2` | 76.969 | 89.002 | 69.473 | 99.999992 | `FP32` recovers the deployment cleanly. |
+| `opportunity` | 89.878 | 94.709 | 249.506 | 99.999992 | `FP32` is slower, but fidelity remains exact. |
+| `unimib` | 77.154 | 77.169 | 60.455 | 99.999992 | This is another strong correction from the `FP32` path. |
+| `skoda` | 63.656 | 95.906 | 61.657 | 99.999992 | Both modes run well, with `FP32` retaining full agreement. |
+| `daphnet` | 40.267 | 71.953 | 35.320 | 99.999992 | The `INT8` gap disappears completely under `FP32`. |
 
-## TinyHAR Results:
+Two label rows, namely `motionsense` and `pamap2`, still preserve a top-1 mismatch against the stored fixture label even in `FP32`. Because parity versus the PyTorch logits remains effectively exact, this disagreement should be interpreted as a reference-label issue for the chosen fixture rather than as a board-side divergence.
 
-TinyHAR was found to be memory-compatible on most datasets, but the fidelity story was much less convincing than the raw success count first suggests. On several datasets, the board did run the model, but the output class and parity metrics drifted enough to weaken the value of the deployment from a scientific reporting standpoint.
+## TinyHAR:
 
-| Dataset | Status | Flash B | Model B | Arena Used B | Heap Used B | Avg Latency ms | PyTorch Parity % | Desktop INT8 Parity % | Predicted / Expected Or Failure |
-| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| ucihar | RUNS | 597924 | 221248 | 126916 | 432048 | 328.974 | 6.124 | 15.060 | WALKING_UPSTAIRS / STANDING |
-| motionsense | RUNS |  |  |  |  | 249.543 | 66.585 |  | dws / dws |
-| wisdm | RUNS |  |  |  |  | 171.717 | 96.965 |  | Jogging / Jogging |
-| pamap2 | RUNS |  |  |  |  | 641.389 | 80.223 |  | standing / lying |
-| opportunity | FAILS | 713412 | 300944 |  |  |  |  | 87.782 | Failed to resize buffer. Requested: 492960, available 302012, missing: 190948 |
-| unimib | RUNS | 588180 | 214544 | 84868 | 432052 | 170.132 | 88.440 | 96.174 | class_0 / class_0 |
-| skoda | RUNS | 592052 | 208024 | 213380 | 432052 | 742.740 | 84.792 | 93.067 | open_close_trunk / open_close_trunk |
-| daphnet | RUNS | 512420 | 138120 | 67588 | 432048 | 173.879 | 0.000 | 0.000 | class_0 / class_0 |
+`TinyHAR` showed that a baseline can be memory-compatible in some settings while still being scientifically weak as an edge result. The `INT8` path was often poor. The `FP32` path repaired several datasets, but not all of them, and three datasets remained true Pico memory failures.
 
-## TinierHAR Results:
+| Dataset | INT8 Status | INT8 Parity (%) | FP32 Status | FP32 Parity (%) | Readout |
+| --- | --- | ---: | --- | ---: | --- |
+| `ucihar` | runs | 6.124 | runs | 94.892 | `FP32` converts a failed `INT8` fidelity case into a usable result. |
+| `motionsense` | runs | 66.585 | runs | 88.628 | Improved, but still below the preferred `90%` threshold. |
+| `wisdm` | runs | 96.965 | runs | 99.639 | Strong in both modes, with `FP32` slightly cleaner. |
+| `pamap2` | runs | 80.223 | fails | - | `FP32` exceeds the available buffer budget. |
+| `opportunity` | fails | - | fails | - | Both modes exceed Pico memory limits. |
+| `unimib` | runs | 88.440 | runs | 99.859 | `FP32` restores research-grade fidelity. |
+| `skoda` | runs | 84.792 | fails | - | The wider `FP32` tensors exceed the board budget. |
+| `daphnet` | runs | 0.000 | runs | 64.902 | The family remains weak on this dataset even in `FP32`. |
 
-TinierHAR produced an interesting contrast. Board fit was not the principal issue here, because all eight datasets were run successfully. The weaker point was prediction fidelity, which varied sharply across datasets and in a few cases fell to levels that would not support a strong deployment claim without qualification.
+## TinierHAR:
 
-| Dataset | Status | Flash B | Model B | Arena Used B | Heap Used B | Avg Latency ms | PyTorch Parity % | Desktop INT8 Parity % | Predicted / Expected |
-| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| ucihar | RUNS | 691444 | 324232 | 172468 | 432048 | 121.846 | 77.517 | 90.183 | STANDING / STANDING |
-| motionsense | RUNS | 685252 | 319624 | 164788 | 432048 | 100.396 | 66.702 | 69.191 | dws / dws |
-| wisdm | RUNS | 688620 | 315016 | 157108 | 432048 | 76.412 | 79.044 | 98.239 | Jogging / Jogging |
-| pamap2 | RUNS | 721908 | 339952 | 198068 | 432048 | 205.091 | 16.485 | 74.766 | running / lying |
-| opportunity | RUNS | 844172 | 431696 | 351668 | 432052 | 930.591 | 27.469 | 95.202 | class_4 / class_0 |
-| unimib | RUNS | 688836 | 315200 | 157108 | 432052 | 77.248 | 81.975 | 98.855 | class_0 / class_0 |
-| skoda | RUNS | 664164 | 280128 | 182244 | 432052 | 257.794 | 84.647 | 99.386 | open_close_trunk / open_close_trunk |
-| daphnet | RUNS | 547916 | 173616 | 88340 | 432048 | 65.231 | 0.000 | 0.000 | class_0 / class_0 |
+`TinierHAR` produced the most dramatic correction after the final `FP32` completion pass. The earlier `INT8` study gave the impression of a broadly drifting family. Once the `FP32` bundles were executed on the board, `7/8` datasets became effectively exact against PyTorch, and only the largest `opportunity` case remained a true memory failure.
 
-## DeepConvLSTM Results:
+| Dataset | INT8 Parity (%) | FP32 Parity (%) | FP32 Status | Readout |
+| --- | ---: | ---: | --- | --- |
+| `ucihar` | 77.517 | 99.999992 | runs | Fully corrected in `FP32`. |
+| `motionsense` | 66.702 | 99.999985 | runs | Fully corrected in `FP32`. |
+| `wisdm` | 79.044 | 99.999992 | runs | Fully corrected in `FP32`. |
+| `pamap2` | 16.485 | 99.999992 | runs | A severe `INT8` failure becomes exact in `FP32`. |
+| `opportunity` | 27.469 | - | fails | The family exceeds the Pico buffer budget on the heaviest case. |
+| `unimib` | 81.975 | 99.999992 | runs | Fully corrected in `FP32`. |
+| `skoda` | 84.647 | 99.999992 | runs | Fully corrected in `FP32`. |
+| `daphnet` | 0.000 | 99.999954 | runs | Fully corrected in `FP32`. |
 
-DeepConvLSTM was found to be largely incompatible with the Pico 2 memory envelope in the tested configuration. The repeated failure mode was allocator exhaustion, which is scientifically useful because it defines a meaningful boundary condition for the platform.
+## DeepConvLSTM:
 
-| Dataset | Status | Flash B | Model B | Arena Used B | Heap Used B | Avg Latency ms | PyTorch Parity % | Desktop INT8 Parity % | Predicted / Expected Or Failure |
-| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| ucihar | FAILS | 2338700 | 1962008 |  |  |  |  | 98.659 | Failed to allocate tail memory. Requested: 16, available 0, missing: 16 |
-| motionsense | FAILS | 2336148 | 1961048 |  |  |  |  | 24.182 | Failed to allocate tail memory. Requested: 16, available 0, missing: 16 |
-| wisdm | FAILS | 2333692 | 1960088 |  |  |  |  | 96.048 | Failed to allocate tail memory. Requested: 16, available 0, missing: 16 |
-| pamap2 | FAILS | 2347716 | 1965760 |  |  |  |  | 98.136 | Failed to allocate tail memory. Requested: 16, available 0, missing: 16 |
-| opportunity | FAILS | 2397676 | 1985192 |  |  |  |  | 95.742 | Failed to allocate tail memory. Requested: 60, available 44, missing: 16 |
-| unimib | FAILS | 2334892 | 1961240 |  |  |  |  | 90.311 | Failed to allocate tail memory. Requested: 60, available 44, missing: 16 |
-| skoda | FAILS | 1787884 | 1403840 |  |  |  |  | 97.649 | Failed to allocate temp memory. Requested: 99576, available 77308, missing: 22268 |
-| daphnet | RUNS | 1239620 | 865304 | 244084 | 432048 | 768.780 | 25.482 | 98.404 | class_0 / class_0 |
+`DeepConvLSTM` remains the clearest negative control in this study. The family is too large for the Pico 2 memory envelope in nearly every case. Most datasets failed before inference under both modes, and the single successful `daphnet` execution remained low-parity even in `FP32`.
 
-## Comparative Interpretation:
+| Dataset | INT8 Status | FP32 Status | FP32 Failure Or Parity | Interpretation |
+| --- | --- | --- | --- | --- |
+| `ucihar` | fails | fails | Failed to allocate tail memory. Requested `60`, available `12`, missing `48`. | Real allocator failure. |
+| `motionsense` | fails | fails | Failed to allocate tail memory. Requested `60`, available `12`, missing `48`. | Real allocator failure. |
+| `wisdm` | fails | fails | Failed to allocate tail memory. Requested `60`, available `12`, missing `48`. | Real allocator failure. |
+| `pamap2` | fails | fails | Failed to allocate tail memory. Requested `60`, available `12`, missing `48`. | Real allocator failure. |
+| `opportunity` | fails | fails | Failed to allocate tail memory. Requested `60`, available `12`, missing `48`. | Real allocator failure. |
+| `unimib` | fails | fails | Failed to allocate tail memory. Requested `60`, available `12`, missing `48`. | Real allocator failure. |
+| `skoda` | fails | fails | Failed to allocate temp memory. Requested `99456`, available `79532`, missing `19924`. | Real allocator failure. |
+| `daphnet` | runs | runs | `26.312%` parity in `FP32`. | Runtime mismatch persists even after quantization is removed. |
 
-Three practical observations were supported by the Pico 2 data.
+## Practical Conclusion:
 
-- Full deployment coverage was achieved only by MicroBiConvLSTM.
-- Broad memory fit was not sufficient for a strong result, because TinierHAR showed that a model may run while still drifting severely from the reference output.
-- Hardware failure was not the only negative outcome of interest, because DeepConvLSTM established a useful upper bound for what should not be expected from this class of microcontroller.
+The final Pico 2 record supports four paper-grade statements.
 
-It should therefore be noted that deployment quality in this study was determined by a compound criterion. A good deployment required successful flashing, successful tensor allocation, acceptable latency, and reasonable parity against the desktop references.
+- `MicroBiConvLSTM` is a faithful Pico 2 deployment family when the `FP32` bundles are used.
+- `TinyHAR` can be partially rescued in `FP32`, but it remains less convincing because fidelity and memory behaviour are still inconsistent across datasets.
+- `TinierHAR` is much stronger than the initial `INT8` sweep suggested, and its `FP32` path is highly faithful on every dataset that fits.
+- `DeepConvLSTM` should remain framed as an impractical Pico 2 target in this deployment configuration.
 
-## Conclusion:
-
-The Pico 2 results support MicroBiConvLSTM as the most credible deployment choice among the tested families. The model was lighter than the baselines in practice, it remained consistently executable across all datasets, and its board-level behaviour was the least pathological when latency, memory use, and fidelity were examined together. The baseline results remain informative, but they mostly reinforce the efficiency advantage claimed for MicroBiConvLSTM in the paper.
+The canonical machine-readable summary for this conclusion is `Pico2Models/Results/pico2Fp32Int8Results.json`. The per-family `INT8` summaries are still preserved, but they should be interpreted as lower-level artifacts rather than as the final paper-facing deployment view.

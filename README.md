@@ -38,6 +38,17 @@ The repository should be read as a research package rather than as a model-only 
 - Native deployment flows are provided for Raspberry Pi Pico 2 and ESP32 hardware.
 - Converted model bundles and board-facing result JSON files are committed for inspection and reuse.
 
+## Pico 2 Deployment Update:
+
+The Pico 2 study should now be interpreted through the corrected `FP32` and `INT8` deployment matrix rather than through the earlier `INT8` summaries alone. The canonical files are stored under `Pico2Models/Results/pico2Fp32Int8Results.json` and `Pico2Models/Results/pico2Fp32Int8Results.md`.
+
+The final hardware picture is summarized as follows.
+
+- `MicroBiConvLSTM` completed all `8/8` datasets in both `FP32` and `INT8`, with essentially exact `FP32` parity against PyTorch across the full dataset sweep.
+- `TinyHAR` completed `7/8` datasets in `INT8` and `5/8` datasets in `FP32`. The `FP32` path repaired several parity failures, but real Pico memory limits remained on the heavier datasets.
+- `TinierHAR` completed `8/8` datasets in `INT8` and `7/8` datasets in `FP32`. The `FP32` path restored near-exact parity on every dataset that fit in memory.
+- `DeepConvLSTM` remained largely outside the Pico 2 memory envelope, with only `daphnet` completing, and with poor parity even in `FP32`.
+
 ---
 
 ## Architecture Summary:
