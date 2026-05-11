@@ -49,6 +49,17 @@ The final hardware picture is summarized as follows.
 - `TinierHAR` completed `8/8` datasets in `INT8` and `7/8` datasets in `FP32`. The `FP32` path restored near-exact parity on every dataset that fit in memory.
 - `DeepConvLSTM` remained largely outside the Pico 2 memory envelope, with only `daphnet` completing, and with poor parity even in `FP32`.
 
+## ESP32 Quantized Deployment Update:
+
+The ESP32 study should now be read through the corrected quantized and `FP32` matrix in `ESP32Models/Results/esp32Fp32Int8Results.json` and `ESP32Models/Results/esp32Fp32Int8Results.md`. A targeted quantized repair pass was applied to the baseline rows that had shown severe ESP32 parity collapse.
+
+The corrected ESP32 picture may be summarized briefly.
+
+- `MicroBiConvLSTM` remained the strongest family, with `7/8` successful `FP32` runs at essentially exact PyTorch parity and full `8/8` quantized coverage.
+- `TinyHAR` quantized parity was materially improved on `motionsense` and `daphnet`, but the repaired `ucihar` quantized bundle no longer fit the classic ESP32 internal-SRAM limit.
+- `TinierHAR` quantized parity was materially improved on `motionsense`, while `daphnet` improved from a degenerate result to a weaker but non-zero deployment outcome.
+- `DeepConvLSTM` remained outside the practical envelope of the connected no-PSRAM ESP32 target.
+
 ---
 
 ## Architecture Summary:

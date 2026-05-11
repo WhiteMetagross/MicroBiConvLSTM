@@ -57,7 +57,7 @@ except ImportError:
 
 THIS_FILE = Path(__file__).resolve()
 MICROBI_DIR = THIS_FILE.parents[1]
-REPO_ROOT = THIS_FILE.parents[2]
+REPO_ROOT = THIS_FILE.parents[1]
 
 if str(MICROBI_DIR) not in sys.path:
     sys.path.insert(0, str(MICROBI_DIR))
@@ -513,6 +513,7 @@ def export_tflite_models(
     saved_model_dir: Path,
     float_tflite_path: Path,
     int_tflite_path: Path,
+    mixed_int16act_tflite_path: Path,
     representative_samples: Sequence[np.ndarray],
 ) -> None:
     require_module(tf, "tensorflow")
@@ -531,6 +532,31 @@ def export_tflite_models(
     int_converter.inference_output_type = tf.int8
     int_model = int_converter.convert()
     int_tflite_path.write_bytes(int_model)
+
+    mixed_converter = tf.lite.TFLiteConverter.from_saved_model(str(saved_model_dir))
+    mixed_converter.experimental_enable_resource_variables = True
+    mixed_converter.optimizations = [tf.lite.Optimize.DEFAULT]
+    mixed_converter.representative_dataset = make_representative_dataset(representative_samples)
+    mixed_converter.target_spec.supported_ops = [
+        tf.lite.OpsSet.EXPERIMENTAL_TFLITE_BUILTINS_ACTIVATIONS_INT16_WEIGHTS_INT8
+    ]
+    mixed_converter.inference_input_type = tf.float32
+    mixed_converter.inference_output_type = tf.float32
+    mixed_model = mixed_converter.convert()
+    mixed_int16act_tflite_path.write_bytes(mixed_model)
+
+
+def should_promote_mixed_quantized(
+    int_report: ParityReport,
+    mixed_report: ParityReport,
+) -> bool:
+    if mixed_report.parity_percent < int_report.parity_percent + 5.0:
+        return False
+    if mixed_report.parity_percent < 90.0 and mixed_report.top1_match is False:
+        return False
+    if int_report.parity_percent >= 90.0 and mixed_report.parity_percent < int_report.parity_percent:
+        return False
+    return True
 
 
 def run_onnx_inference(onnx_path: Path, sample_input: np.ndarray) -> np.ndarray:
@@ -782,7 +808,7 @@ def main() -> None:
     output_dir = (
         args.output_dir.resolve()
         if args.output_dir is not None
-        else (MICROBI_DIR / "edgeExports" / f"{dataset}_{stem}").resolve()
+        else (MICROBI_DIR / "edge_exports" / f"{dataset}_{stem}").resolve()
     )
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -849,10 +875,13 @@ def main() -> None:
 
     float_tflite_path = output_dir / f"{stem}.tflite"
     int_tflite_path = output_dir / f"{stem}_quant.tflite"
+    full_int8_tflite_path = output_dir / f"{stem}_quant_fullint8.tflite"
+    mixed_int16act_tflite_path = output_dir / f"{stem}_quant_int16act.tflite"
     export_tflite_models(
         saved_model_dir=saved_model_dir,
         float_tflite_path=float_tflite_path,
-        int_tflite_path=int_tflite_path,
+        int_tflite_path=full_int8_tflite_path,
+        mixed_int16act_tflite_path=mixed_int16act_tflite_path,
         representative_samples=representative_samples,
     )
 
@@ -861,17 +890,43 @@ def main() -> None:
         sample_np,
         expected_output_shape=torch_output.shape,
     )
-    int_output, quant_input_details, quant_output_details = run_tflite_inference(
-        int_tflite_path,
+    int_output, full_int8_input_details, full_int8_output_details = run_tflite_inference(
+        full_int8_tflite_path,
+        sample_np,
+        expected_output_shape=torch_output.shape,
+    )
+    mixed_output, mixed_input_details, mixed_output_details = run_tflite_inference(
+        mixed_int16act_tflite_path,
         sample_np,
         expected_output_shape=torch_output.shape,
     )
 
     onnx_report = build_parity_report("PyTorch vs ONNX", torch_output, onnx_output)
     float_report = build_parity_report("PyTorch vs TFLite FP32", torch_output, float_output)
-    int_report = build_parity_report("PyTorch vs TFLite INT8", torch_output, int_output)
+    full_int8_report = build_parity_report("PyTorch vs TFLite INT8", torch_output, int_output)
+    mixed_int16act_report = build_parity_report(
+        "PyTorch vs TFLite INT16Act-INT8W",
+        torch_output,
+        mixed_output,
+    )
+
+    use_mixed_quantized = should_promote_mixed_quantized(full_int8_report, mixed_int16act_report)
+    if use_mixed_quantized:
+        shutil.copyfile(mixed_int16act_tflite_path, int_tflite_path)
+        quant_input_details = mixed_input_details
+        quant_output_details = mixed_output_details
+        quant_report = mixed_int16act_report
+        quant_recipe = "int16_activations_int8_weights"
+    else:
+        shutil.copyfile(full_int8_tflite_path, int_tflite_path)
+        quant_input_details = full_int8_input_details
+        quant_output_details = full_int8_output_details
+        quant_report = full_int8_report
+        quant_recipe = "full_int8"
 
     float_info = inspect_tflite_model(float_tflite_path)
+    full_int8_info = inspect_tflite_model(full_int8_tflite_path)
+    mixed_int16act_info = inspect_tflite_model(mixed_int16act_tflite_path)
     int_info = inspect_tflite_model(int_tflite_path)
 
     header_path = output_dir / f"{stem}_model.h"
@@ -899,6 +954,8 @@ def main() -> None:
             "saved_model": str(saved_model_dir),
             "tflite_fp32": str(float_tflite_path),
             "tflite_int8": str(int_tflite_path),
+            "tflite_int8_full": str(full_int8_tflite_path),
+            "tflite_int16act": str(mixed_int16act_tflite_path),
             "c_header": str(header_path),
             "c_source": str(source_path),
         },
@@ -906,17 +963,29 @@ def main() -> None:
             "onnx_bytes": onnx_path.stat().st_size,
             "tflite_fp32_bytes": float_tflite_path.stat().st_size,
             "tflite_int8_bytes": int_tflite_path.stat().st_size,
+            "tflite_int8_full_bytes": full_int8_tflite_path.stat().st_size,
+            "tflite_int16act_bytes": mixed_int16act_tflite_path.stat().st_size,
         },
         "ram_estimates": {
             "tflite_fp32_tensor_bytes": int(float_info["tensor_bytes_estimate"]),
             "tflite_int8_tensor_bytes": int(int_info["tensor_bytes_estimate"]),
+            "tflite_int8_full_tensor_bytes": int(full_int8_info["tensor_bytes_estimate"]),
+            "tflite_int16act_tensor_bytes": int(mixed_int16act_info["tensor_bytes_estimate"]),
         },
         "tflite_fp32": float_info,
+        "tflite_int8_full": full_int8_info,
+        "tflite_int16act": mixed_int16act_info,
         "tflite_int8": int_info,
+        "quantized_selection": {
+            "recipe": quant_recipe,
+            "promoted_mixed_quantized": use_mixed_quantized,
+        },
         "parity": {
             "onnx": onnx_report.to_dict(),
             "tflite_fp32": float_report.to_dict(),
-            "tflite_int8": int_report.to_dict(),
+            "tflite_int8": quant_report.to_dict(),
+            "tflite_int8_full": full_int8_report.to_dict(),
+            "tflite_int16act": mixed_int16act_report.to_dict(),
         },
     }
 
@@ -929,7 +998,7 @@ def main() -> None:
         "SUMMARY | "
         f"Model Size: {bytes_to_human(report['sizes']['tflite_int8_bytes'])} | "
         f"RAM Req: {bytes_to_human(report['ram_estimates']['tflite_int8_tensor_bytes'])} | "
-        f"Parity: {int_report.parity_percent:.3f}% | "
+        f"Parity: {quant_report.parity_percent:.3f}% | "
         f"Paths: {int_tflite_path} ; {header_path} ; {source_path}"
     )
 

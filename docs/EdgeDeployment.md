@@ -60,11 +60,13 @@ A completed retraining bundle may also be converted in batch form.
 python scripts/convertPaperRetraining.py --run-dir results/paperRetraining/<run_name>
 ```
 
-During this stage, four artifact classes are produced.
+During this stage, the quantized baseline path may now produce two internal quantized candidates when a severe collapse is detected. A full `INT8` export is still generated, but a mixed quantized candidate with `INT16` activations and `INT8` weights is also evaluated. When the mixed candidate materially improves parity, it is promoted to the canonical `*_quant.tflite` deployment artifact and the selection is recorded in `parity_report.json`.
+
+Four user-facing artifact classes are therefore preserved in the repository.
 
 - `*.onnx` for framework-neutral graph inspection.
 - `*.tflite` for FP32 TensorFlow Lite validation.
-- `*_quant.tflite` for INT8 edge deployment.
+- `*_quant.tflite` for the canonical quantized deployment artifact.
 - `*_model.h` and `*_model.cpp` for TFLite Micro integration.
 
 ## Artifact Layout:
@@ -78,7 +80,7 @@ Three artifact trees are now committed for reproducibility.
 - `Pico2Models/Results/pico2Fp32Int8Results.json`.
   This consolidated matrix is the canonical Pico 2 deployment record for the final repository state.
 - `ESP32Models/`.
-  This directory stores the ESP32-facing INT8 deployment models together with the validated native ESP32 result JSON files and run logs.
+  This directory stores the ESP32-facing quantized deployment models together with the validated native ESP32 result JSON files and run logs.
 
 The committed artifact layout was chosen so that the training code, the conversion code, and the board-ready assets could be inspected independently.
 
