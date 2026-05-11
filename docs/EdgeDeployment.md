@@ -30,6 +30,7 @@ The main workflow was kept script-driven so that each stage could be called inde
 - `scripts/convertPaperRetraining.py`.
 - `scripts/generatePicoFixture.py`.
 - `scripts/runPico2DeploymentSweep.py`.
+- `scripts/compilePico2VariantResults.py`.
 - `scripts/prepareEsp32Bundle.py`.
 - `scripts/runSingleEsp32Bundle.py`.
 - `scripts/runEsp32NativeDeploymentSweep.py`.
@@ -74,6 +75,8 @@ Three artifact trees are now committed for reproducibility.
   This directory stores the generic exported checkpoints and conversion outputs for the paper retraining sweep.
 - `Pico2Models/`.
   This directory stores the Pico-facing TFLite Micro model arrays together with the Pico result JSON files.
+- `Pico2Models/Results/pico2Fp32Int8Results.json`.
+  This consolidated matrix is the canonical Pico 2 deployment record for the final repository state.
 - `ESP32Models/`.
   This directory stores the ESP32-facing INT8 deployment models together with the validated native ESP32 result JSON files and run logs.
 
@@ -93,6 +96,12 @@ The Pico scripts expect the following tooling.
 - `picotool` on `PATH`, or the `PICOTOOL` environment variable.
 - A Python interpreter for UF2 helper tools through `PICO_TOOL_PYTHON`.
 - Optional WSL bridge values through `WSL_DISTRO` and `WSL_DEPLOY_PYTHON`.
+
+After the raw board runs have been collected, the consolidated `FP32` and `INT8` matrix may be regenerated from the committed summary JSON with the following command.
+
+```bash
+python scripts/compilePico2VariantResults.py
+```
 
 ## Native ESP32 Path:
 
