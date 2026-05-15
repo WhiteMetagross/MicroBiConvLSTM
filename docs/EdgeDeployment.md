@@ -71,10 +71,8 @@ Four user-facing artifact classes are therefore preserved in the repository.
 
 ## Artifact Layout:
 
-Three artifact trees are now committed for reproducibility.
+Two deployment artifact trees are now committed for reproducibility, while the training results remain under `results/`.
 
-- `models/convertedPaperModels/`.
-  This directory stores the generic exported checkpoints and conversion outputs for the paper retraining sweep.
 - `Pico2Models/`.
   This directory stores the Pico-facing TFLite Micro model arrays together with the Pico result JSON files.
 - `Pico2Models/Results/pico2Fp32Int8Results.json`.
