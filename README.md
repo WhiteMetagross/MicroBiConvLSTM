@@ -217,7 +217,6 @@ Micro-Bi-ConvLSTM/
 |   |   |-- MemoryFootprintResults.md
 |   |-- hpo/                     HPO result JSON files.
 |   |-- training/                Training result JSON files.
-|-- models/convertedPaperModels/ Committed exported model bundles from the paper retraining sweep.
 |-- docs/                        Architecture documentation and figures.
 |   |-- Architecture.md
 |   |-- EdgeDeployment.md
@@ -282,7 +281,6 @@ python scripts/exportEdgeModels.py --model microbi --dataset motionsense --check
 
 10. Inspect the committed deployment artifacts.
 
-- `models/convertedPaperModels/` for the generic exported model bundles.
 - `Pico2Models/` for the Pico 2 ready arrays and result JSON files.
 - `ESP32Models/` for the ESP32 ready INT8 bundles and validated run logs.
 
