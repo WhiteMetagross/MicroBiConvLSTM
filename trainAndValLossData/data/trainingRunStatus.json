@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "runId": "paperRetrainSeed29-20261028T194010",
+  "state": "complete",
+  "plannedRuns": 32,
+  "completedRuns": 32,
+  "failedRuns": 0,
+  "modelsCompleted": {
+    "microBiConvLstm": 8,
+    "deepConvLstm": 8,
+    "tinyHar": 8,
+    "tinierHar": 8
+  },
+  "datasetsPerModel": [
+    "ucihar",
+    "motionsense",
+    "wisdm",
+    "pamap2",
+    "opportunity",
+    "unimib",
+    "skoda",
+    "daphnet"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "models": [
+    "logistic_regression",
+    "rbf_svm",
+    "xgboost"
+  ],
+  "datasets": [
+    "ucihar",
+    "motionsense",
+    "wisdm",
+    "pamap2",
+    "opportunity",
+    "unimib",
+    "skoda",
+    "daphnet"
+  ],
+  "seeds": [
+    1591207480,
+    1814784297,
+    230512677,
+    345687080,
+    983484580
+  ],
+  "masterSeed": 17,
+  "featureVersion": 1,
+  "pcaComponents": 64,
+  "svmMaxTrainSamples": 0,
+  "jobs": 8,
+  "createdAt": "2026-10-28T21:29:10.895080",
+  "protocol": {
+    "testUsage": "single final evaluation after fixed training",
+    "learnedPreprocessing": "training split only",
+    "primaryMetric": "macro-F1"
+  }
+}

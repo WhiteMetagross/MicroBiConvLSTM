@@ -38,6 +38,7 @@ sys.path.insert(0, str(_REPO_DIR))
 sys.path.insert(0, str(_REPO_ROOT))
 
 from baselines import TinyHAR, TinierHAR, DeepConvLSTM
+from scripts.trainingCurveArtifacts import saveLossCurveArtifacts
 
 
 # ============== Constants ==============
@@ -419,7 +420,7 @@ def trainModel(
     useAmp = device.type == 'cuda'
     
     # Training loop
-    bestF1 = 0.0
+    bestF1 = float('-inf')
     bestEpoch = 0
     bestState = None
     noBetterCount = 0
@@ -472,6 +473,29 @@ def trainModel(
         print(f"  Test F1 (Macro): {finalF1*100:.2f}%")
         print(f"  Training Time: {totalTime:.1f}s")
     
+    saveDir = Path(saveDir) / modelName / datasetName
+    saveDir.mkdir(parents=True, exist_ok=True)
+    modelTokens = {
+        'deepconvlstm': 'DeepConvLstm', 'tinyhar': 'TinyHar', 'tinierhar': 'TinierHar',
+    }
+    datasetTokens = {
+        'ucihar': 'UciHar', 'motionsense': 'MotionSense', 'wisdm': 'Wisdm',
+        'pamap2': 'Pamap2', 'opportunity': 'Opportunity', 'unimib': 'UniMiB',
+        'skoda': 'Skoda', 'daphnet': 'Daphnet',
+    }
+    validationSource = 'Held-out evaluation loader (testLoader in the paper-aligned trainer).'
+    curveArtifacts = saveLossCurveArtifacts(
+        outputDir=saveDir,
+        fileStem=f"{modelTokens[modelName.lower()]}{datasetTokens[datasetName.lower()]}Seed{seed}",
+        trainLosses=history['train_loss'],
+        validationLosses=history['test_loss'],
+        modelName=modelName,
+        datasetName=datasetName,
+        seed=seed,
+        bestEpoch=bestEpoch,
+        validationSource=validationSource,
+    )
+
     # Save results
     result = {
         'model': modelName,
@@ -492,12 +516,11 @@ def trainModel(
             'patience': int(patience),
         },
         'hpo_source': hpoPath,
+        'curveArtifacts': curveArtifacts,
+        'validationSource': validationSource,
     }
     
     # Save checkpoint
-    saveDir = Path(saveDir) / modelName / datasetName
-    saveDir.mkdir(parents=True, exist_ok=True)
-    
     torch.save({
         'model_state_dict': bestState,
         'config': config,
@@ -520,6 +543,8 @@ def trainModel(
         },
         'datasetConfig': config,
         'hpoSource': hpoPath,
+        'curveArtifacts': curveArtifacts,
+        'validationSource': validationSource,
     }
     with open(saveDir / f"seed{seed}_run_config.json", 'w', encoding='utf-8') as f:
         json.dump(runConfig, f, indent=2)

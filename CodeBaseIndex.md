@@ -17,6 +17,8 @@ This document provides a complete index of every file in the repository, organiz
 5. [scripts/ Directory](#scripts-directory)
 6. [results/ Directory](#results-directory)
 7. [docs/ Directory](#docs-directory)
+8. [trainAndValLossData/ Directory](#trainandvallossdata-directory)
+9. [classicalBaselines/ Directory](#classicalbaselines-directory)
 
 ---
 
@@ -129,6 +131,7 @@ This directory contains all executable scripts for training, hyperparameter opti
 | `__init__.py` | Package initialization for scripts module. | N/A |
 | `trainMicroBiConvLstm.py` | Training script for MicroBiConvLSTM. Supports multi-seed training with early stopping, AMP/FP16 acceleration, cosine annealing LR scheduling, and comprehensive logging. Uses dataset-specific HPO-tuned hyperparameters. | `trainModel`, `trainMultiSeed` (via CLI) |
 | `trainBaselines.py` | Training script for baseline models (TinyHAR, TinierHAR, DeepConvLSTM). Same training protocol as MicroBiConvLSTM for fair comparison. | `trainModel`, `runMultiSeed` |
+| `trainingCurveArtifacts.py` | Shared writer for camelCase JSON and CSV loss histories and deterministic publication-ready PNG curves. | `saveLossCurveArtifacts` |
 | `hpoMicroBiConvLstm.py` | Hyperparameter optimization for MicroBiConvLSTM using Optuna with TPE sampler. Tunes learning rate, weight decay, and dropout while keeping the architecture frozen. 50 trials per dataset with median pruning. | `runHPO`, `objective` |
 | `hpoBaselines.py` | Hyperparameter optimization for baseline models using the same Optuna configuration as MicroBiConvLSTM HPO for fairness. | `runHPO`, `runAllHPO`, `objective` |
 | `ablationStudiesMicroBiConvLstm.py` | Ablation study runner supporting five study types: architectural ablations (A0-A4), Pareto grid search (convFilters x lstmHidden), complexity scaling analysis, INT8 post-training quantization simulation, and sensitivity/robustness evaluations. | `study_arch`, `study_pareto`, `study_complexity`, `study_quant` |
@@ -197,6 +200,27 @@ Contains JSON files with multi-seed training results for each model-dataset comb
 
 Models covered: `MicroBiConvLSTM`, `deepconvlstm`, `tinyhar`, `tinierhar`.
 Datasets covered: All eight benchmark datasets.
+
+---
+
+## trainAndValLossData/ Directory:
+
+This directory archives the complete seed-29 loss evidence for four neural model families on eight datasets. The `images/` directory contains 32 PNG curves. The `data/` directory contains the corresponding JSON and CSV histories, the retraining manifest and status, and cross-run summaries. Its `README.md` records the exact 200-epoch, patience-10 protocol and the provenance of the monitored held-out loss.
+
+---
+
+## classicalBaselines/ Directory:
+
+| File | Description | Key Functions |
+|------|-------------|---------------|
+| `README.md` | Research protocol, commands, result interpretation, and the cross-paradigm efficiency table. | N/A |
+| `trainClassicalBaselines.py` | Fits multinomial logistic regression, PCA-RBF SVM, and XGBoost from complete raw sensor windows using deterministic train-fitted features and preprocessing. | `extract_features`, `run`, `build_parser` |
+| `profileClassicalComplexity.py` | Calculates learned-state size and estimator-specific inference complexity from fitted models. | `profile_model`, `aggregate`, `model_summaries` |
+| `benchmarkCrossParadigmEfficiency.py` | Measures complete raw-window host inference cycles on one pinned WSL CPU thread. | `benchmark_cycles`, `summarize_models` |
+| `readTsc.c` | Serialized x86 invariant timestamp-counter reader used by the host-cycle benchmark. | `tsc_begin`, `tsc_end` |
+| `tests/testClassicalBaselines.py` | Unit tests for the feature schema, seed generation, and deterministic stratified capping. | `ClassicalBaselineTests` |
+
+The `classicalBaselines/results/data/` directory contains the 120 per-run records, aggregate classical results, complexity reports, and cross-paradigm host-cycle measurements. Model containers and feature caches are reproducible runtime products and are intentionally not committed in this results directory.
 
 ---
 

@@ -37,6 +37,21 @@ The repository should be read as a research package rather than as a model-only 
 - The full conversion path to ONNX, TFLite, and TFLite Micro is included.
 - Native deployment flows are provided for Raspberry Pi Pico 2 and ESP32 hardware.
 - Converted model bundles and board-facing result JSON files are committed for inspection and reuse.
+- The complete seed-29 neural loss histories and 32 publication-ready curves are archived under [`trainAndValLossData/`](trainAndValLossData/README.md).
+- Reproducible logistic regression, PCA-RBF SVM, and XGBoost baselines are provided under [`classicalBaselines/`](classicalBaselines/README.md).
+
+## Cross-Paradigm Efficiency:
+
+Complete raw-window inference was measured on one pinned WSL CPU thread. Classical paths include feature extraction, FFTs, scaling, PCA where applicable, and prediction. MicroBiConvLSTM uses the available seed-29 checkpoints, while the classical results average five seeds generated from master seed 17.
+
+| Model | Macro-F1 | Learned state size | Mcycles/window | F1 points/KiB | F1 points/Mcycle |
+|---|---:|---:|---:|---:|---:|
+| MicroBiConvLSTM | 84.68% | 44.68 KiB | 0.510 | 1.895 | 166.055 |
+| Logistic Regression | 77.82% | 14.52 KiB | 1.207 | 5.361 | 64.446 |
+| PCA-RBF SVM | 82.02% | 1,213.95 KiB | 1.782 | 0.068 | 46.021 |
+| XGBoost | 81.29% | 752.69 KiB | 2.370 | 0.108 | 34.304 |
+
+Learned-state sizes are compact FP32-equivalent inference representations, not framework container sizes. The cycle values are host implementation measurements and must not be presented as Pico 2 or ESP32 cycles.
 
 ## Pico 2 Deployment Update:
 
@@ -203,6 +218,15 @@ Micro-Bi-ConvLSTM/
 |   |-- benchmarkMemoryFootprint.py
 |   |-- create_paper_figures.py
 |   |-- visualize_sensor_waves.py
+|-- trainAndValLossData/         Seed-29 loss histories and 32 curve figures.
+|   |-- data/                    JSON, CSV, manifest, status, and summary data.
+|   |-- images/                  Publication-ready PNG loss curves.
+|-- classicalBaselines/          Classical training and efficiency analysis.
+|   |-- trainClassicalBaselines.py
+|   |-- profileClassicalComplexity.py
+|   |-- benchmarkCrossParadigmEfficiency.py
+|   |-- readTsc.c
+|   |-- results/data/            Five-seed results and host-cycle measurements.
 |-- embedded/                    Embedded deployment runtimes.
 |   |-- pico2EdgeRuntime/        Generic Arduino Pico 2 TFLM runtime.
 |   |-- esp32NativeDeployment/   Native ESP-IDF ESP32 deployment project.

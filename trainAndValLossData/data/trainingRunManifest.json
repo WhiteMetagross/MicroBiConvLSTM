@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "runId": "paperRetrainSeed29-20261028T194010",
+  "models": [
+    "microBiConvLstm",
+    "deepConvLstm",
+    "tinyHar",
+    "tinierHar"
+  ],
+  "datasets": [
+    "ucihar",
+    "motionsense",
+    "wisdm",
+    "pamap2",
+    "opportunity",
+    "unimib",
+    "skoda",
+    "daphnet"
+  ],
+  "seeds": [29],
+  "epochs": 200,
+  "patience": 10,
+  "paperProtocol": {
+    "optimizer": "AdamW",
+    "scheduler": "CosineAnnealingLR",
+    "selectionMetric": "macro-F1",
+    "validationSource": "existing held-out evaluation loader used by the paper-aligned trainers",
+    "hpoReference": "results/hpo/*.json and the paper training protocol"
+  },
+  "curveArtifacts": {
+    "formats": ["json", "csv", "png"],
+    "metrics": ["trainLoss", "validationLoss"],
+    "imageDirectory": "../images",
+    "dataDirectory": "."
+  },
+  "reproductionCommand": "python scripts/runPaperRetraining.py --models all --datasets all --seed-list 29 --epochs 200 --patience 10"
+}

@@ -1,0 +1,472 @@
+{
+  "groups": [
+    {
+      "model": "logistic_regression",
+      "dataset": "daphnet",
+      "seeds": [
+        1591207480,
+        1814784297,
+        230512677,
+        345687080,
+        983484580
+      ],
+      "runs": 5,
+      "accuracyMean": 0.9016811003565971,
+      "accuracyStd": 0.0,
+      "macroF1Mean": 0.6301090071223194,
+      "macroF1Std": 0.0,
+      "balancedAccuracyMean": 0.6478835277483209,
+      "fitSecondsMean": 8.334702035999953
+    },
+    {
+      "model": "logistic_regression",
+      "dataset": "motionsense",
+      "seeds": [
+        1591207480,
+        1814784297,
+        230512677,
+        345687080,
+        983484580
+      ],
+      "runs": 5,
+      "accuracyMean": 0.9168181818181818,
+      "accuracyStd": 1.1102230246251565e-16,
+      "macroF1Mean": 0.8942990296451889,
+      "macroF1Std": 1.1102230246251565e-16,
+      "balancedAccuracyMean": 0.899961257257179,
+      "fitSecondsMean": 12.320472165599998
+    },
+    {
+      "model": "logistic_regression",
+      "dataset": "opportunity",
+      "seeds": [
+        1591207480,
+        1814784297,
+        230512677,
+        345687080,
+        983484580
+      ],
+      "runs": 5,
+      "accuracyMean": 0.8274743104380746,
+      "accuracyStd": 0.0,
+      "macroF1Mean": 0.8491603534208154,
+      "macroF1Std": 0.0,
+      "balancedAccuracyMean": 0.8479437488010632,
+      "fitSecondsMean": 61.46462450959997
+    },
+    {
+      "model": "logistic_regression",
+      "dataset": "pamap2",
+      "seeds": [
+        1591207480,
+        1814784297,
+        230512677,
+        345687080,
+        983484580
+      ],
+      "runs": 5,
+      "accuracyMean": 0.6601254921259843,
+      "accuracyStd": 0.0,
+      "macroF1Mean": 0.5920204931983685,
+      "macroF1Std": 0.0,
+      "balancedAccuracyMean": 0.6163481694709806,
+      "fitSecondsMean": 19.9402986878
+    },
+    {
+      "model": "logistic_regression",
+      "dataset": "skoda",
+      "seeds": [
+        1591207480,
+        1814784297,
+        230512677,
+        345687080,
+        983484580
+      ],
+      "runs": 5,
+      "accuracyMean": 0.9691032403918614,
+      "accuracyStd": 0.0,
+      "macroF1Mean": 0.9600794962178274,
+      "macroF1Std": 1.1102230246251565e-16,
+      "balancedAccuracyMean": 0.9639666434171332,
+      "fitSecondsMean": 61.793720353399976
+    },
+    {
+      "model": "logistic_regression",
+      "dataset": "ucihar",
+      "seeds": [
+        1591207480,
+        1814784297,
+        230512677,
+        345687080,
+        983484580
+      ],
+      "runs": 5,
+      "accuracyMean": 0.9284017645062775,
+      "accuracyStd": 0.0,
+      "macroF1Mean": 0.9269868015635595,
+      "macroF1Std": 1.1102230246251565e-16,
+      "balancedAccuracyMean": 0.9270937831730871,
+      "fitSecondsMean": 5.0260574066
+    },
+    {
+      "model": "logistic_regression",
+      "dataset": "unimib",
+      "seeds": [
+        1591207480,
+        1814784297,
+        230512677,
+        345687080,
+        983484580
+      ],
+      "runs": 5,
+      "accuracyMean": 0.7721345229924502,
+      "accuracyStd": 0.0,
+      "macroF1Mean": 0.6215732597575797,
+      "macroF1Std": 0.0,
+      "balancedAccuracyMean": 0.6433209070407709,
+      "fitSecondsMean": 0.40365298619999523
+    },
+    {
+      "model": "logistic_regression",
+      "dataset": "wisdm",
+      "seeds": [
+        1591207480,
+        1814784297,
+        230512677,
+        345687080,
+        983484580
+      ],
+      "runs": 5,
+      "accuracyMean": 0.8436934218467108,
+      "accuracyStd": 1.1102230246251565e-16,
+      "macroF1Mean": 0.7512297801841591,
+      "macroF1Std": 0.0,
+      "balancedAccuracyMean": 0.7680600505511787,
+      "fitSecondsMean": 2.3873055614000007
+    },
+    {
+      "model": "rbf_svm",
+      "dataset": "daphnet",
+      "seeds": [
+        1591207480,
+        1814784297,
+        230512677,
+        345687080,
+        983484580
+      ],
+      "runs": 5,
+      "accuracyMean": 0.9465104431991849,
+      "accuracyStd": 0.00045564299083032114,
+      "macroF1Mean": 0.6289513552925159,
+      "macroF1Std": 0.0038339437342710674,
+      "balancedAccuracyMean": 0.5845506362672322,
+      "fitSecondsMean": 22.26635896759999
+    },
+    {
+      "model": "rbf_svm",
+      "dataset": "motionsense",
+      "seeds": [
+        1591207480,
+        1814784297,
+        230512677,
+        345687080,
+        983484580
+      ],
+      "runs": 5,
+      "accuracyMean": 0.9243636363636364,
+      "accuracyStd": 0.00017007533576246335,
+      "macroF1Mean": 0.9047283763014429,
+      "macroF1Std": 0.00015788046182516714,
+      "balancedAccuracyMean": 0.9108727350859759,
+      "fitSecondsMean": 2.059417203999999
+    },
+    {
+      "model": "rbf_svm",
+      "dataset": "opportunity",
+      "seeds": [
+        1591207480,
+        1814784297,
+        230512677,
+        345687080,
+        983484580
+      ],
+      "runs": 5,
+      "accuracyMean": 0.8660897782585181,
+      "accuracyStd": 0.0014751954242277657,
+      "macroF1Mean": 0.8828769037268561,
+      "macroF1Std": 0.0011917192454578758,
+      "balancedAccuracyMean": 0.8793644978355859,
+      "fitSecondsMean": 1.8956798198000115
+    },
+    {
+      "model": "rbf_svm",
+      "dataset": "pamap2",
+      "seeds": [
+        1591207480,
+        1814784297,
+        230512677,
+        345687080,
+        983484580
+      ],
+      "runs": 5,
+      "accuracyMean": 0.7721948818897637,
+      "accuracyStd": 0.003772355130015126,
+      "macroF1Mean": 0.7723305619614559,
+      "macroF1Std": 0.003826647553677339,
+      "balancedAccuracyMean": 0.7840734335735073,
+      "fitSecondsMean": 3.2237359720000085
+    },
+    {
+      "model": "rbf_svm",
+      "dataset": "skoda",
+      "seeds": [
+        1591207480,
+        1814784297,
+        230512677,
+        345687080,
+        983484580
+      ],
+      "runs": 5,
+      "accuracyMean": 0.9712132629992464,
+      "accuracyStd": 0.0008788171657641471,
+      "macroF1Mean": 0.969211258147358,
+      "macroF1Std": 0.000858192100036974,
+      "balancedAccuracyMean": 0.9725926948999642,
+      "fitSecondsMean": 3.867246584600025
+    },
+    {
+      "model": "rbf_svm",
+      "dataset": "ucihar",
+      "seeds": [
+        1591207480,
+        1814784297,
+        230512677,
+        345687080,
+        983484580
+      ],
+      "runs": 5,
+      "accuracyMean": 0.9276552426196132,
+      "accuracyStd": 0.00045016963560981266,
+      "macroF1Mean": 0.9270771355891629,
+      "macroF1Std": 0.00044269466620555815,
+      "balancedAccuracyMean": 0.9268518032926242,
+      "fitSecondsMean": 1.4069811504
+    },
+    {
+      "model": "rbf_svm",
+      "dataset": "unimib",
+      "seeds": [
+        1591207480,
+        1814784297,
+        230512677,
+        345687080,
+        983484580
+      ],
+      "runs": 5,
+      "accuracyMean": 0.7755662319835278,
+      "accuracyStd": 0.0,
+      "macroF1Mean": 0.675488228183381,
+      "macroF1Std": 0.0,
+      "balancedAccuracyMean": 0.6908858646920791,
+      "fitSecondsMean": 0.8683945744000084
+    },
+    {
+      "model": "rbf_svm",
+      "dataset": "wisdm",
+      "seeds": [
+        1591207480,
+        1814784297,
+        230512677,
+        345687080,
+        983484580
+      ],
+      "runs": 5,
+      "accuracyMean": 0.8391671695835848,
+      "accuracyStd": 0.0,
+      "macroF1Mean": 0.8010523434223696,
+      "macroF1Std": 0.0,
+      "balancedAccuracyMean": 0.8348577492399973,
+      "fitSecondsMean": 1.5277580032000002
+    },
+    {
+      "model": "xgboost",
+      "dataset": "daphnet",
+      "seeds": [
+        1591207480,
+        1814784297,
+        230512677,
+        345687080,
+        983484580
+      ],
+      "runs": 5,
+      "accuracyMean": 0.9523178807947019,
+      "accuracyStd": 0.0007624365535963241,
+      "macroF1Mean": 0.6882777408018474,
+      "macroF1Std": 0.007649965233808989,
+      "balancedAccuracyMean": 0.6270987981618946,
+      "fitSecondsMean": 2.6783126081999398
+    },
+    {
+      "model": "xgboost",
+      "dataset": "motionsense",
+      "seeds": [
+        1591207480,
+        1814784297,
+        230512677,
+        345687080,
+        983484580
+      ],
+      "runs": 5,
+      "accuracyMean": 0.9509090909090909,
+      "accuracyStd": 0.0012613124477737997,
+      "macroF1Mean": 0.935146408834812,
+      "macroF1Std": 0.0013523118725574485,
+      "balancedAccuracyMean": 0.9380470263378495,
+      "fitSecondsMean": 4.510569215999999
+    },
+    {
+      "model": "xgboost",
+      "dataset": "opportunity",
+      "seeds": [
+        1591207480,
+        1814784297,
+        230512677,
+        345687080,
+        983484580
+      ],
+      "runs": 5,
+      "accuracyMean": 0.8796106003244997,
+      "accuracyStd": 0.0027914522229451257,
+      "macroF1Mean": 0.892559347478065,
+      "macroF1Std": 0.0018620814996720126,
+      "balancedAccuracyMean": 0.8936192118576542,
+      "fitSecondsMean": 69.0904189006
+    },
+    {
+      "model": "xgboost",
+      "dataset": "pamap2",
+      "seeds": [
+        1591207480,
+        1814784297,
+        230512677,
+        345687080,
+        983484580
+      ],
+      "runs": 5,
+      "accuracyMean": 0.6175319881889764,
+      "accuracyStd": 0.005986288319415525,
+      "macroF1Mean": 0.5648888166507934,
+      "macroF1Std": 0.005772260435750829,
+      "balancedAccuracyMean": 0.5689319663645733,
+      "fitSecondsMean": 27.179271541000013
+    },
+    {
+      "model": "xgboost",
+      "dataset": "skoda",
+      "seeds": [
+        1591207480,
+        1814784297,
+        230512677,
+        345687080,
+        983484580
+      ],
+      "runs": 5,
+      "accuracyMean": 0.9939713639788998,
+      "accuracyStd": 0.0009532110505405525,
+      "macroF1Mean": 0.995321630855266,
+      "macroF1Std": 0.0010028510659849407,
+      "balancedAccuracyMean": 0.9964060217958156,
+      "fitSecondsMean": 59.44402248259998
+    },
+    {
+      "model": "xgboost",
+      "dataset": "ucihar",
+      "seeds": [
+        1591207480,
+        1814784297,
+        230512677,
+        345687080,
+        983484580
+      ],
+      "runs": 5,
+      "accuracyMean": 0.929487614523244,
+      "accuracyStd": 0.0008421902711904383,
+      "macroF1Mean": 0.9280687794585578,
+      "macroF1Std": 0.0008551100164789649,
+      "balancedAccuracyMean": 0.9275518313326057,
+      "fitSecondsMean": 4.344240851599999
+    },
+    {
+      "model": "xgboost",
+      "dataset": "unimib",
+      "seeds": [
+        1591207480,
+        1814784297,
+        230512677,
+        345687080,
+        983484580
+      ],
+      "runs": 5,
+      "accuracyMean": 0.7424845573095402,
+      "accuracyStd": 0.0010981468771448038,
+      "macroF1Mean": 0.6527325016172967,
+      "macroF1Std": 0.009307753545359872,
+      "balancedAccuracyMean": 0.6638489736909488,
+      "fitSecondsMean": 2.758790727800033
+    },
+    {
+      "model": "xgboost",
+      "dataset": "wisdm",
+      "seeds": [
+        1591207480,
+        1814784297,
+        230512677,
+        345687080,
+        983484580
+      ],
+      "runs": 5,
+      "accuracyMean": 0.8744719372359686,
+      "accuracyStd": 0.0037446208949881983,
+      "macroF1Mean": 0.8460827774680265,
+      "macroF1Std": 0.003079564872205646,
+      "balancedAccuracyMean": 0.8641133873985682,
+      "fitSecondsMean": 1.8554600506000043
+    }
+  ],
+  "completedRuns": 120,
+  "experiment": {
+    "models": [
+      "logistic_regression",
+      "rbf_svm",
+      "xgboost"
+    ],
+    "datasets": [
+      "ucihar",
+      "motionsense",
+      "wisdm",
+      "pamap2",
+      "opportunity",
+      "unimib",
+      "skoda",
+      "daphnet"
+    ],
+    "seeds": [
+      1591207480,
+      1814784297,
+      230512677,
+      345687080,
+      983484580
+    ],
+    "masterSeed": 17,
+    "featureVersion": 1,
+    "pcaComponents": 64,
+    "svmMaxTrainSamples": 0,
+    "jobs": 8,
+    "createdAt": "2026-10-28T21:29:10.895080",
+    "protocol": {
+      "testUsage": "single final evaluation after fixed training",
+      "learnedPreprocessing": "training split only",
+      "primaryMetric": "macro-F1"
+    }
+  }
+}

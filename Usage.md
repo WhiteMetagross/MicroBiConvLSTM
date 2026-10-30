@@ -114,6 +114,17 @@ This sequentially trains the model on all eight datasets.
 - Early stopping monitors the macro F1 score on the test set.
 - For imbalanced datasets (PAMAP2, Opportunity, Skoda, Daphnet), class weights are applied to the CrossEntropyLoss.
 - Mixed precision training (AMP/FP16) is automatically enabled when a CUDA GPU is available.
+- JSON, CSV, and PNG loss artifacts are written after each run through `scripts/trainingCurveArtifacts.py`.
+
+### Reproducing the Seed-29 Loss-Curve Matrix:
+
+The complete four-model, eight-dataset experiment is run sequentially with the following command.
+
+```bash
+python scripts/runPaperRetraining.py --models all --datasets all --seed-list 29 --epochs 200 --patience 10
+```
+
+The archived outputs are documented in [trainAndValLossData/README.md](trainAndValLossData/README.md). The plotted validation series is the loss from the existing held-out `testLoader` used by the paper-aligned early-stopping protocol, rather than a newly introduced independent validation split.
 
 ### Output Files:
 
@@ -160,6 +171,16 @@ python scripts/trainBaselines.py --dataset all --model all --seeds 5
 
 - `results/baselines/{model}/{dataset}/seed{seed}_checkpoint.pt` -- Model checkpoint.
 - `results/baselines/{model}/{dataset}/seed{seed}_results.json` -- Per-seed result file.
+
+### Running the Classical Baselines:
+
+Multinomial logistic regression, PCA-RBF SVM, and XGBoost are implemented separately under `classicalBaselines/`. All three receive complete raw windows and share the same deterministic 21-feature-per-channel extraction path.
+
+```bash
+python classicalBaselines/trainClassicalBaselines.py --models all --datasets all --seeds 5 --master-seed 17
+```
+
+Preprocessing is fitted on training data only. The held-out split is used once for final evaluation. Complete commands, complexity profiling, and host-cycle benchmarking are documented in [classicalBaselines/README.md](classicalBaselines/README.md).
 
 ---
 

@@ -50,6 +50,7 @@ from sklearn.metrics import accuracy_score, f1_score, confusion_matrix, classifi
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from models import MicroBiConvLSTM, createMicroBiConvLstm
+from scripts.trainingCurveArtifacts import saveLossCurveArtifacts
 
 
 # ============== Dataset Configurations ==============
@@ -423,7 +424,7 @@ def trainModel(
     useAmp = device.type == 'cuda'
     
     # Training loop
-    bestF1 = 0.0
+    bestF1 = float('-inf')
     bestEpoch = 0
     bestState = None
     noImproveCount = 0
@@ -494,6 +495,25 @@ def trainModel(
         print(f"Test F1 Score: {testF1*100:.2f}%")
         print(f"Training Time: {trainingTime:.1f}s")
     
+    os.makedirs(saveDir, exist_ok=True)
+    datasetTokens = {
+        'ucihar': 'UciHar', 'motionsense': 'MotionSense', 'wisdm': 'Wisdm',
+        'pamap2': 'Pamap2', 'opportunity': 'Opportunity', 'unimib': 'UniMiB',
+        'skoda': 'Skoda', 'daphnet': 'Daphnet',
+    }
+    validationSource = 'Held-out evaluation loader (testLoader in the paper-aligned trainer).'
+    curveArtifacts = saveLossCurveArtifacts(
+        outputDir=saveDir,
+        fileStem=f"microBiConvLstm{datasetTokens[datasetName.lower()]}Seed{seed}",
+        trainLosses=history['trainLoss'],
+        validationLosses=history['testLoss'],
+        modelName='MicroBiConvLSTM',
+        datasetName=datasetName,
+        seed=seed,
+        bestEpoch=bestEpoch,
+        validationSource=validationSource,
+    )
+
     # Prepare results
     results = {
         'dataset': datasetName,
@@ -507,10 +527,11 @@ def trainModel(
         'predictions': [int(v) for v in allPreds],
         'labels': [int(v) for v in allLabels],
         'config': config,
+        'curveArtifacts': curveArtifacts,
+        'validationSource': validationSource,
     }
     
     # Save checkpoint
-    os.makedirs(saveDir, exist_ok=True)
     checkpointPath = os.path.join(saveDir, f"microbi_convlstm_{datasetName}_seed{seed}_checkpoint.pt")
     torch.save({
         'model_state_dict': bestState,
@@ -533,6 +554,8 @@ def trainModel(
             'selectionMetric': 'macro_f1',
         },
         'datasetConfig': config,
+        'curveArtifacts': curveArtifacts,
+        'validationSource': validationSource,
     }
     with open(os.path.join(saveDir, f"microbi_convlstm_{datasetName}_seed{seed}_run_config.json"), 'w', encoding='utf-8') as f:
         json.dump(runConfig, f, indent=2)
